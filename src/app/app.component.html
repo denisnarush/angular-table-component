@@ -1,0 +1,26 @@
+<div class="col-lg-8 mx-auto p-4 py-md-5">
+  <code>
+    <div class="card">
+      <div class="card-body"><app-table #main [config]="config" [data]="data" [templates]="{ email, avatar, nested }"></app-table></div>
+    </div>
+  </code>
+</div>
+
+<ng-template #email let-data>
+  <a *ngIf="data.email" [href]="'mailto:' + data.email">{{ data.email }}</a>
+  <ng-container *ngIf="!data.email">&mdash;</ng-container>
+</ng-template>
+
+<ng-template #avatar let-data>
+  <img src="https://picsum.photos/seed/{{data.id}}/26/26" alt="">
+</ng-template>
+
+
+<ng-template #nested let-item>
+  <div class="card">
+    <div class="card-body">
+      <app-table [config]="config2" [data]="getDetails(item)"></app-table>
+    </div>
+  </div>
+</ng-template>
+

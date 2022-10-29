@@ -1,0 +1,115 @@
+<div class="table-responsive">
+  <table class="table caption-top">
+    <caption *ngIf="config.caption">{{ config.caption }}</caption>
+    <thead>
+      <tr>
+        <th
+          scope="col"
+          *ngFor="let column of config.columns"
+          [style]="{ width: column.width }"
+        >
+          <ng-container [ngSwitch]="column.alias">
+            <ng-container
+              *ngSwitchCase="'selecting'"
+            >
+              <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
+                <input class="form-check-input" type="checkbox" [name]="uuid">
+              </div>
+            </ng-container>
+            <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
+          </ng-container>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngFor="let item of data">
+        <tr>
+          <td *ngFor="let column of config.columns">
+            <ng-container [ngSwitch]="column.alias">
+              <!-- select SINGLE -->
+              <ng-container
+                *ngSwitchCase="'selecting'"
+                [ngTemplateOutlet]="selecting"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              ></ng-container>
+              <!-- nesting toggle -->
+              <ng-container
+                *ngSwitchCase="'nesting'"
+                [ngTemplateOutlet]="nesting"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              ></ng-container>
+              <!-- default -->
+              <ng-container *ngSwitchDefault>
+                <!-- output: regular & data -->
+                <ng-container
+                  *ngIf="!templates[column.alias]"
+                >{{ item[column.alias] }}</ng-container>
+                <!-- output: regular & no data  -->
+                <ng-container
+                  *ngIf="!templates[column.alias] && item[column.alias] == null"
+                  [ngTemplateOutlet]="empty"
+                ></ng-container>
+                <!-- output: template -->
+                <ng-container
+                  *ngIf="templates[column.alias]"
+                  [ngTemplateOutlet]="templates[column.alias]"
+                  [ngTemplateOutletContext]="{ $implicit: item }"
+                ></ng-container>
+              </ng-container>
+            </ng-container>
+
+          </td>
+        </tr>
+        <tr *ngIf="config.nesting && isNestedOpened(item)">
+          <td [attr.colspan]="config.columns.length"><ng-container 
+            [ngTemplateOutlet]="templates['nested']"
+            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td></tr>
+      </ng-container>
+    </tbody>
+
+    <tfoot hidden>
+      <tr>
+        <td [attr.colspan]="config.columns.length">
+          <nav [attr.aria-label]="config.caption ? config.caption + ' pagination' : null">
+            <ul class="pagination mb-0">
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<ng-template #empty let-item>&mdash;</ng-template>
+
+<ng-template #selecting let-item>
+  <!-- Single -->
+  <div *ngIf="config.selection === TableSelections.Single" class="form-check">
+    <input class="form-check-input" type="radio" [name]="uuid" [value]="item.id">
+  </div>
+  <!-- Multiple -->
+  <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
+    <input class="form-check-input" type="checkbox" [name]="uuid" [value]="item.id">
+  </div>
+</ng-template>
+
+<ng-template #nesting let-item>
+  <button type="button" class="badge text-bg-dark" (click)="toggleNested(item)">
+    <ng-container *ngIf="isNestedOpened(item)">↑</ng-container>
+    <ng-container *ngIf="!isNestedOpened(item)">↓</ng-container>
+  </button>
+</ng-template>
