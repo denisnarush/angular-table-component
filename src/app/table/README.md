@@ -13,6 +13,7 @@
 ## Features that are under development
 
 ```text
+- Predefined selection
 - Pagination
 - Sorting
 ```
