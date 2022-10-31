@@ -7,6 +7,7 @@
 - Nesting (table-in-table)
 - Selection (Single/Multiple)
 - Default output for empty data: —
+- Empty template also avalible in ng-template as let-empty="empty"
 ```
 
 ## Features that are under development
