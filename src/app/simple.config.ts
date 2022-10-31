@@ -29,6 +29,7 @@ export const SimpleConfig: TableConfigInterface = {
       width: '0',
     },
   ],
+  uniqIdKey: 'id',
   selection: TableSelections.Single,
   nesting: true,
 };

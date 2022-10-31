@@ -5,12 +5,12 @@
       <tr>
         <th
           scope="col"
-          *ngFor="let column of config.columns"
+          *ngFor="let column of columns"
           [style]="{ width: column.width }"
         >
           <ng-container [ngSwitch]="column.alias">
             <ng-container
-              *ngSwitchCase="'selecting'"
+              *ngSwitchCase="TableConfigColumAliases.Selecting"
             >
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
                 <input class="form-check-input" type="checkbox" [name]="uuid">
@@ -25,17 +25,17 @@
     <tbody>
       <ng-container *ngFor="let item of data">
         <tr>
-          <td *ngFor="let column of config.columns">
+          <td *ngFor="let column of columns">
             <ng-container [ngSwitch]="column.alias">
               <!-- select SINGLE -->
               <ng-container
-                *ngSwitchCase="'selecting'"
+                *ngSwitchCase="TableConfigColumAliases.Selecting"
                 [ngTemplateOutlet]="selecting"
                 [ngTemplateOutletContext]="{ $implicit: item }"
               ></ng-container>
               <!-- nesting toggle -->
               <ng-container
-                *ngSwitchCase="'nesting'"
+                *ngSwitchCase="TableConfigColumAliases.Nesting"
                 [ngTemplateOutlet]="nesting"
                 [ngTemplateOutletContext]="{ $implicit: item }"
               ></ng-container>
@@ -62,7 +62,7 @@
           </td>
         </tr>
         <tr *ngIf="config.nesting && isNestedOpened(item)">
-          <td [attr.colspan]="config.columns.length"><ng-container 
+          <td [attr.colspan]="columns.size"><ng-container 
             [ngTemplateOutlet]="templates['nested']"
             [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td></tr>
       </ng-container>
@@ -70,7 +70,7 @@
 
     <tfoot hidden>
       <tr>
-        <td [attr.colspan]="config.columns.length">
+        <td [attr.colspan]="columns.size">
           <nav [attr.aria-label]="config.caption ? config.caption + ' pagination' : null">
             <ul class="pagination mb-0">
               <li class="page-item">

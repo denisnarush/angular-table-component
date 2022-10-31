@@ -1,17 +1,19 @@
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
   Input,
   OnInit,
-  TemplateRef,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {
+  ColumnNestingConfig,
+  ColumnSelectingConfig,
   ColumnsTemplatesInterface,
   OpenedNestedRowTemplatesInterface,
+  TableConfigColumAliases,
+  TableConfigColumInterface,
   TableConfigInterface,
+  TableDataInterface,
   TableSelections,
 } from './table.interface';
 
@@ -25,56 +27,47 @@ import {
 export class TableComponent implements OnInit {
   uuid: string = new Date().getTime() + '';
   TableSelections = TableSelections;
+  TableConfigColumAliases = TableConfigColumAliases;
+
+  columns: Set<TableConfigColumInterface> = new Set();
 
   @Input('config') config: TableConfigInterface = {
     columns: [{ label: 'Column', alias: 'column' }],
+    uniqIdKey: 'id',
   };
-  @Input('data') data: any[] = [];
+  @Input('data') data: TableDataInterface[] = [];
   @Input('templates') templates: ColumnsTemplatesInterface = {};
 
   private opened: OpenedNestedRowTemplatesInterface = {};
 
   ngOnInit(): void {
-    if (this.config.nesting) {
-      this.initNesting();
-    }
-
     if (this.config.selection) {
       this.initSelection();
     }
-  }
 
-  isNestedOpened(item: any): boolean {
-    return this.opened[item.id];
-  }
+    this.config.columns.forEach((column) => {
+      this.columns.add(column);
+    });
 
-  toggleNested(item: any): void {
-    if (this.opened[item.id] == null) {
-      this.opened[item.id] = true;
-    } else {
-      this.opened[item.id] = !this.opened[item.id];
+    if (this.config.nesting) {
+      this.initNesting();
     }
   }
 
+  isNestedOpened(item: TableDataInterface): boolean {
+    return this.opened[item[this.config.uniqIdKey]];
+  }
+
+  toggleNested(item: TableDataInterface): void {
+    this.opened[item[this.config.uniqIdKey]] =
+      !this.opened[item[this.config.uniqIdKey]];
+  }
+
   private initNesting(): void {
-    this.config.columns = this.config.columns.filter(
-      (index) => index.alias != 'nesting'
-    );
-    this.config.columns.push({
-      label: '',
-      alias: 'nesting',
-      width: '0',
-    });
+    this.columns.add(ColumnNestingConfig);
   }
 
   private initSelection(): void {
-    this.config.columns = this.config.columns.filter(
-      (index) => index.alias != 'selecting'
-    );
-    this.config.columns.unshift({
-      label: '',
-      alias: 'selecting',
-      width: '0',
-    });
+    this.columns.add(ColumnSelectingConfig);
   }
 }

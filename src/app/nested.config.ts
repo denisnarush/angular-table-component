@@ -8,5 +8,6 @@ export const NestedConfig: TableConfigInterface = {
       alias: 'name',
     },
   ],
+  uniqIdKey: 'id',
   selection: TableSelections.Multiple,
 };

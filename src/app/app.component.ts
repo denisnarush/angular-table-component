@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { data } from './mock.data';
 import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
@@ -8,10 +8,14 @@ import { SimpleConfig } from './simple.config';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
 })
-export class AppComponent {
-  config = SimpleConfig;
-  config2 = NestedConfig;
+export class AppComponent implements OnInit {
+  SimpleConfig = SimpleConfig;
+  NestedConfig = NestedConfig;
   data = data;
+
+  constructor() {}
+
+  ngOnInit(): void {}
 
   getDetails(item: any) {
     return this.data
