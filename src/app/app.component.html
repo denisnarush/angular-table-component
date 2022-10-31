@@ -6,13 +6,12 @@
   </code>
 </div>
 
-<ng-template #email let-data>
-  <a *ngIf="data.email" [href]="'mailto:' + data.email">{{ data.email }}</a>
-  <ng-container *ngIf="!data.email">&mdash;</ng-container>
+<ng-template #email let-empty="empty" let-data>
+  <a *ngIf="data.email; else empty" [href]="'mailto:' + data.email">{{ data.email }}</a>
 </ng-template>
 
-<ng-template #avatar let-data>
-  <img src="https://picsum.photos/seed/{{data.id}}/26/26" alt="">
+<ng-template #avatar let-empty="empty" let-data>
+  <img *ngIf="data.id; else empty" src="https://picsum.photos/seed/{{data.id}}/26/26" alt="">
 </ng-template>
 
 

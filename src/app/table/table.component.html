@@ -54,11 +54,10 @@
                 <ng-container
                   *ngIf="templates[column.alias]"
                   [ngTemplateOutlet]="templates[column.alias]"
-                  [ngTemplateOutletContext]="{ $implicit: item }"
+                  [ngTemplateOutletContext]="{ $implicit: item, empty }"
                 ></ng-container>
               </ng-container>
             </ng-container>
-
           </td>
         </tr>
         <tr *ngIf="config.nesting && isNestedOpened(item)">
