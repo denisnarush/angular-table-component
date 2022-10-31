@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { data } from './mock.data';
 import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
+import { TableDataInterface } from './table/table.interface';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,8 @@ export class AppComponent implements OnInit {
   NestedConfig = NestedConfig;
   data = data;
 
+  selectedData!: Map<TableDataInterface, boolean>;
+
   constructor() {}
 
   ngOnInit(): void {}
@@ -21,5 +24,9 @@ export class AppComponent implements OnInit {
     return this.data
       .filter((index) => index.id === item.id)
       .map((index) => index.friends)[0];
+  }
+
+  onSelectionChange(data: Map<TableDataInterface, boolean>): void {
+    this.selectedData = data;
   }
 }

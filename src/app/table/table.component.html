@@ -14,7 +14,7 @@
             >
               <!-- check All -->
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
-                <input class="form-check-input" type="checkbox" [name]="uuid">
+                <input class="form-check-input" type="checkbox" [name]="uuid" (change)="onSelectAll($event)">
               </div>
             </ng-container>
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting"></ng-container>
@@ -100,11 +100,11 @@
 <ng-template #selecting let-item>
   <!-- Single -->
   <div *ngIf="config.selection === TableSelections.Single" class="form-check">
-    <input class="form-check-input" type="radio" [name]="uuid" [value]="item.id">
+    <input class="form-check-input" type="radio" [name]="uuid" [checked]="selectedItems.get(item)" [value]="item.id" (change)="onSelectItem(item, $event)">
   </div>
   <!-- Multiple -->
   <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
-    <input class="form-check-input" type="checkbox" [name]="uuid" [value]="item.id">
+    <input class="form-check-input" type="checkbox" [checked]="selectedItems.get(item)" [name]="uuid" [value]="item.id" (change)="onSelectItem(item, $event)">
   </div>
 </ng-template>
 

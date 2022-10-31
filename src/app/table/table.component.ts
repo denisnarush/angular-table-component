@@ -1,8 +1,11 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -38,8 +41,15 @@ export class TableComponent implements OnInit {
   };
   @Input('data') data: TableDataInterface[] = [];
   @Input('templates') templates: ColumnsTemplatesInterface = {};
+  @Output('selectionChange') selectionChange: EventEmitter<
+    Map<TableDataInterface, boolean>
+  > = new EventEmitter();
 
+  selectedItems: Map<TableDataInterface, boolean> = new Map();
   private opened: OpenedNestedRowTemplatesInterface = {};
+  private lastSelectedItem!: TableDataInterface;
+
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     if (this.config.selection) {
@@ -53,6 +63,8 @@ export class TableComponent implements OnInit {
     if (this.config.nesting) {
       this.initNesting();
     }
+
+    this.initSelectedItems();
   }
 
   isNestedOpened(item: TableDataInterface): boolean {
@@ -62,6 +74,37 @@ export class TableComponent implements OnInit {
   onToggleNested(item: TableDataInterface): void {
     this.opened[item[this.config.uniqIdKey]] =
       !this.opened[item[this.config.uniqIdKey]];
+  }
+
+  onSelectAll(event: Event): void {
+    for (const item of this.selectedItems.keys()) {
+      this.selectedItems.set(item, (event.target as HTMLInputElement).checked);
+    }
+    this.cdRef.detectChanges();
+
+    this.selectionChange.emit(this.selectedItems);
+  }
+
+  onSelectItem(item: TableDataInterface, event: Event): void {
+    if (this.config.selection === TableSelections.Multiple) {
+      this.selectedItems.set(item, (event.target as HTMLInputElement).checked);
+    }
+
+    if (this.config.selection === TableSelections.Single) {
+      if (this.lastSelectedItem != null) {
+        this.selectedItems.set(this.lastSelectedItem, false);
+      }
+      this.selectedItems.set(item, true);
+      this.lastSelectedItem = item;
+    }
+
+    this.selectionChange.emit(this.selectedItems);
+  }
+
+  private initSelectedItems(): void {
+    this.data.forEach((item) => {
+      this.selectedItems.set(item, false);
+    });
   }
 
   private initNesting(): void {
