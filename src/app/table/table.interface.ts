@@ -12,6 +12,7 @@ type TableConfigColumAliasType =
   | string;
 
 export enum TableConfigColumAliases {
+  Regular = 'REGULAR',
   Nesting = 'NESTING',
   Selecting = 'SELECTING',
 }
@@ -34,6 +35,13 @@ export interface TableConfigColumInterface {
   width?: string;
 }
 
+export interface TableColumnInterface extends TableConfigColumInterface {
+  type:
+    | TableConfigColumAliases.Regular
+    | TableConfigColumAliases.Nesting
+    | TableConfigColumAliases.Selecting;
+}
+
 export interface ColumnsTemplatesInterface {
   [ColumnAlias: string]: TemplateRef<any>;
 }
@@ -42,14 +50,16 @@ export interface OpenedNestedRowTemplatesInterface {
   [uid: string]: boolean;
 }
 
-export const ColumnNestingConfig: TableConfigColumInterface = {
+export const ColumnNestingConfig: TableColumnInterface = {
   label: '',
   alias: TableConfigColumAliases.Nesting,
+  type: TableConfigColumAliases.Nesting,
   width: '0',
 };
 
-export const ColumnSelectingConfig: TableConfigColumInterface = {
+export const ColumnSelectingConfig: TableColumnInterface = {
   label: '',
   alias: TableConfigColumAliases.Selecting,
+  type: TableConfigColumAliases.Selecting,
   width: '0',
 };

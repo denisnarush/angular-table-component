@@ -10,6 +10,7 @@ import {
   ColumnSelectingConfig,
   ColumnsTemplatesInterface,
   OpenedNestedRowTemplatesInterface,
+  TableColumnInterface,
   TableConfigColumAliases,
   TableConfigColumInterface,
   TableConfigInterface,
@@ -29,7 +30,7 @@ export class TableComponent implements OnInit {
   TableSelections = TableSelections;
   TableConfigColumAliases = TableConfigColumAliases;
 
-  columns: Set<TableConfigColumInterface> = new Set();
+  columns: Set<TableColumnInterface> = new Set();
 
   @Input('config') config: TableConfigInterface = {
     columns: [{ label: 'Column', alias: 'column' }],
@@ -46,7 +47,7 @@ export class TableComponent implements OnInit {
     }
 
     this.config.columns.forEach((column) => {
-      this.columns.add(column);
+      this.columns.add({ ...column, type: TableConfigColumAliases.Regular });
     });
 
     if (this.config.nesting) {
@@ -58,7 +59,7 @@ export class TableComponent implements OnInit {
     return this.opened[item[this.config.uniqIdKey]];
   }
 
-  toggleNested(item: TableDataInterface): void {
+  onToggleNested(item: TableDataInterface): void {
     this.opened[item[this.config.uniqIdKey]] =
       !this.opened[item[this.config.uniqIdKey]];
   }

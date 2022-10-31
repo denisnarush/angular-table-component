@@ -8,14 +8,16 @@
           *ngFor="let column of columns"
           [style]="{ width: column.width }"
         >
-          <ng-container [ngSwitch]="column.alias">
+          <ng-container [ngSwitch]="column.type">
             <ng-container
               *ngSwitchCase="TableConfigColumAliases.Selecting"
             >
+              <!-- check All -->
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
                 <input class="form-check-input" type="checkbox" [name]="uuid">
               </div>
             </ng-container>
+            <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting"></ng-container>
             <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
           </ng-container>
         </th>
@@ -26,7 +28,7 @@
       <ng-container *ngFor="let item of data">
         <tr>
           <td *ngFor="let column of columns">
-            <ng-container [ngSwitch]="column.alias">
+            <ng-container [ngSwitch]="column.type">
               <!-- select SINGLE -->
               <ng-container
                 *ngSwitchCase="TableConfigColumAliases.Selecting"
@@ -107,7 +109,7 @@
 </ng-template>
 
 <ng-template #nesting let-item>
-  <button type="button" class="badge text-bg-dark" (click)="toggleNested(item)">
+  <button type="button" class="badge text-bg-dark" (click)="onToggleNested(item)">
     <ng-container *ngIf="isNestedOpened(item)">↑</ng-container>
     <ng-container *ngIf="!isNestedOpened(item)">↓</ng-container>
   </button>
