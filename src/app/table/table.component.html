@@ -1,6 +1,5 @@
 <div class="table-responsive">
-  <table class="table caption-top">
-    <caption *ngIf="config.caption">{{ config.caption }}</caption>
+  <table class="table is-hoverable is-focusable is-fullwidth is-relative">
     <thead>
       <tr>
         <th
@@ -14,7 +13,10 @@
             >
               <!-- check All -->
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
-                <input class="form-check-input" type="checkbox" [name]="uuid" (change)="onSelectAll($event)">
+                <label class="checkbox">
+                  <input type="checkbox" (change)="onSelectAll($event)">
+                  <span></span>
+                </label>
               </div>
             </ng-container>
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting"></ng-container>
@@ -46,17 +48,17 @@
                 <!-- output: regular & data -->
                 <ng-container
                   *ngIf="!templates[column.alias]"
-                >{{ item[column.alias] }}</ng-container>
+                >{{ getValue(item, column.alias) }}</ng-container>
                 <!-- output: regular & no data  -->
                 <ng-container
-                  *ngIf="!templates[column.alias] && item[column.alias] == null"
+                  *ngIf="!templates[column.alias] && getValue(item, column.alias) == null"
                   [ngTemplateOutlet]="empty"
                 ></ng-container>
                 <!-- output: template -->
                 <ng-container
                   *ngIf="templates[column.alias]"
                   [ngTemplateOutlet]="templates[column.alias]"
-                  [ngTemplateOutletContext]="{ $implicit: item, empty }"
+                  [ngTemplateOutletContext]="{ $implicit: item, empty: empty }"
                 ></ng-container>
               </ng-container>
             </ng-container>
@@ -99,13 +101,15 @@
 
 <ng-template #selecting let-item>
   <!-- Single -->
-  <div *ngIf="config.selection === TableSelections.Single" class="form-check">
-    <input class="form-check-input" type="radio" [name]="uuid" [checked]="selectedItems.get(item)" [value]="item.id" (change)="onSelectItem(item, $event)">
-  </div>
+  <label *ngIf="config.selection === TableSelections.Single" class="radio">
+    <input type="radio" [name]="uuid" [checked]="selectedItems.get(item)?.selected" [disabled]="selectedItems.get(item)?.disabled" [value]="item.id" (change)="onSelectItem(item, $event)">
+    <span></span>
+  </label>
   <!-- Multiple -->
-  <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
-    <input class="form-check-input" type="checkbox" [checked]="selectedItems.get(item)" [name]="uuid" [value]="item.id" (change)="onSelectItem(item, $event)">
-  </div>
+  <label *ngIf="config.selection === TableSelections.Multiple" class="checkbox">
+    <input type="checkbox" [checked]="selectedItems.get(item)?.selected" [disabled]="selectedItems.get(item)?.disabled" [name]="uuid" [value]="item.id" (change)="onSelectItem(item, $event)">
+    <span></span>
+  </label>
 </ng-template>
 
 <ng-template #nesting let-item>

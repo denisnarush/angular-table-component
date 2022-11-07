@@ -50,6 +50,11 @@ export interface OpenedNestedRowTemplatesInterface {
   [uid: string]: boolean;
 }
 
+export interface SelectedItemStateInterface {
+  selected: boolean;
+  disabled: boolean;
+}
+
 export const ColumnNestingConfig: TableColumnInterface = {
   label: '',
   alias: TableConfigColumAliases.Nesting,

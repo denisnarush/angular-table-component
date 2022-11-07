@@ -1,11 +1,12 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -13,9 +14,9 @@ import {
   ColumnSelectingConfig,
   ColumnsTemplatesInterface,
   OpenedNestedRowTemplatesInterface,
+  SelectedItemStateInterface,
   TableColumnInterface,
   TableConfigColumAliases,
-  TableConfigColumInterface,
   TableConfigInterface,
   TableDataInterface,
   TableSelections,
@@ -24,47 +25,53 @@ import {
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.less'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnChanges {
+  @Input() config: TableConfigInterface = {
+    columns: [{ label: 'Column', alias: 'column' }],
+    uniqIdKey: 'id',
+  };
+  @Input() data: TableDataInterface[] = [];
+  @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
+    new Map();
+  @Input() templates: ColumnsTemplatesInterface = {};
+  @Output() selectionChange: EventEmitter<
+    Map<TableDataInterface, SelectedItemStateInterface>
+  > = new EventEmitter();
   uuid: string = new Date().getTime() + '';
   TableSelections = TableSelections;
   TableConfigColumAliases = TableConfigColumAliases;
 
   columns: Set<TableColumnInterface> = new Set();
+  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
+    new Map();
 
-  @Input('config') config: TableConfigInterface = {
-    columns: [{ label: 'Column', alias: 'column' }],
-    uniqIdKey: 'id',
-  };
-  @Input('data') data: TableDataInterface[] = [];
-  @Input('templates') templates: ColumnsTemplatesInterface = {};
-  @Output('selectionChange') selectionChange: EventEmitter<
-    Map<TableDataInterface, boolean>
-  > = new EventEmitter();
-
-  selectedItems: Map<TableDataInterface, boolean> = new Map();
   private opened: OpenedNestedRowTemplatesInterface = {};
   private lastSelectedItem!: TableDataInterface;
-
-  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     if (this.config.selection) {
       this.initSelection();
     }
-
     this.config.columns.forEach((column) => {
       this.columns.add({ ...column, type: TableConfigColumAliases.Regular });
     });
-
     if (this.config.nesting) {
       this.initNesting();
     }
+  }
 
-    this.initSelectedItems();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['defaultItems']) {
+      this.initSelectedItems();
+      this.selectionChange.emit(this.selectedItems);
+    }
+
+    if (changes['data']?.currentValue !== null) {
+      this.initSelectedItems();
+    }
   }
 
   isNestedOpened(item: TableDataInterface): boolean {
@@ -77,33 +84,60 @@ export class TableComponent implements OnInit {
   }
 
   onSelectAll(event: Event): void {
-    for (const item of this.selectedItems.keys()) {
-      this.selectedItems.set(item, (event.target as HTMLInputElement).checked);
+    for (const [item, state] of this.selectedItems.entries()) {
+      this.selectedItems.set(item, {
+        selected: state.disabled
+          ? state.selected
+          : (event.target as HTMLInputElement).checked,
+        disabled: state.disabled,
+      });
     }
-    this.cdRef.detectChanges();
 
     this.selectionChange.emit(this.selectedItems);
   }
 
   onSelectItem(item: TableDataInterface, event: Event): void {
     if (this.config.selection === TableSelections.Multiple) {
-      this.selectedItems.set(item, (event.target as HTMLInputElement).checked);
+      this.selectedItems.set(item, {
+        selected: (event.target as HTMLInputElement).checked,
+        disabled: false,
+      });
     }
 
     if (this.config.selection === TableSelections.Single) {
       if (this.lastSelectedItem != null) {
-        this.selectedItems.set(this.lastSelectedItem, false);
+        const state = this.selectedItems.get(this.lastSelectedItem);
+        this.selectedItems.set(this.lastSelectedItem, {
+          selected: false,
+          disabled: state ? state.disabled : false,
+        });
       }
-      this.selectedItems.set(item, true);
+      this.selectedItems.set(item, { selected: true, disabled: false });
       this.lastSelectedItem = item;
     }
 
     this.selectionChange.emit(this.selectedItems);
   }
 
+  getValue(object: TableDataInterface, keys: string | string[]): string | null {
+    keys = Array.isArray(keys) ? keys : keys.split('.');
+    object = object[keys[0]];
+    if (object && keys.length > 1) {
+      return this.getValue(object, keys.slice(1));
+    }
+    return object == null ? null : `${object}`;
+  }
+
   private initSelectedItems(): void {
     this.data.forEach((item) => {
-      this.selectedItems.set(item, false);
+      const defaultItem = this.defaultItems.get(item);
+      this.selectedItems.set(item, {
+        selected: defaultItem ? defaultItem.selected : false,
+        disabled: defaultItem ? defaultItem.disabled : false,
+      });
+      this.lastSelectedItem = defaultItem?.selected
+        ? item
+        : this.lastSelectedItem;
     });
   }
 
