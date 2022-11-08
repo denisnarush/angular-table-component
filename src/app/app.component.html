@@ -1,30 +1,31 @@
-<div class="section">
+<div *ngIf="vm$ | async as vm" class="section">
   <div class="conatiner">
     <app-table #main
-      [config]="SimpleConfig"
-      [data]="data"
+      [config]="simpleConfig"
+      [data]="vm.users"
       [defaultItems]="defaultItems"
       [templates]="{ email, avatar, nested }"
       (selectionChange)="onSimpleSelectionChange($event)"
     ></app-table>
     <div class="alert alert-light" role="alert" *ngIf="selectedData">
       <p class="lead">
-        <span *ngFor="let item of selectedData | keyvalue ">{{ item.key['name'] }} <br></span>
+        <ng-container *ngFor="let item of selectedData | keyvalue">
+          <span *ngIf="item.value.selected">{{ item.key['name'] }}<br></span>
+        </ng-container>
       </p>
     </div>
   </div>
-  
+
   <ng-template #email let-empty="empty" let-data>
     <a *ngIf="data.email; else empty" [href]="'mailto:' + data.email">{{ data.email }}</a>
   </ng-template>
-  
+
   <ng-template #avatar let-empty="empty" let-data>
     <img *ngIf="data.id; else empty" src="https://picsum.photos/seed/{{data.id}}/26/26" alt="">
   </ng-template>
-  
-  
+
   <ng-template #nested let-item>
-    <app-table [config]="NestedConfig" [data]="data2" [defaultItems]="defaultItems2"></app-table>
+    <app-table [config]="NestedConfig"></app-table>
   </ng-template>
-  
+
 </div>

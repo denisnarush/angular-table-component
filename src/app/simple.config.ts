@@ -4,19 +4,13 @@ export const SimpleConfig: TableConfigInterface = {
   caption: 'Users',
   columns: [
     {
-      label: '',
-      alias: 'avatar',
-      width: '0',
-    },
-    {
       label: 'Name',
       alias: 'name',
-      width: '8em',
+      width: '12em',
     },
     {
       label: 'Email',
       alias: 'email',
-      width: '0',
     },
     {
       label: 'Gender',
@@ -30,6 +24,5 @@ export const SimpleConfig: TableConfigInterface = {
     },
   ],
   uniqIdKey: 'id',
-  selection: TableSelections.Single,
-  nesting: true,
+  selection: TableSelections.Multiple,
 };

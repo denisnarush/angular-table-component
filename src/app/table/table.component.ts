@@ -29,35 +29,40 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent implements OnInit, OnChanges {
-  @Input() config: TableConfigInterface = {
-    columns: [{ label: 'Column', alias: 'column' }],
-    uniqIdKey: 'id',
-  };
-  @Input() data: TableDataInterface[] = [];
+  @Input() config!: TableConfigInterface;
+  @Input() data: TableDataInterface[] | null = null;
+
   @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
   > = new EventEmitter();
-  uuid: string = new Date().getTime() + '';
-  TableSelections = TableSelections;
-  TableConfigColumAliases = TableConfigColumAliases;
 
+  uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
   selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
+
+  TableSelections = TableSelections;
+  TableConfigColumAliases = TableConfigColumAliases;
 
   private opened: OpenedNestedRowTemplatesInterface = {};
   private lastSelectedItem!: TableDataInterface;
 
   ngOnInit(): void {
+    if (this.config == null) {
+      return;
+    }
+
     if (this.config.selection) {
       this.initSelection();
     }
+
     this.config.columns.forEach((column) => {
       this.columns.add({ ...column, type: TableConfigColumAliases.Regular });
     });
+
     if (this.config.nesting) {
       this.initNesting();
     }
@@ -129,7 +134,7 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private initSelectedItems(): void {
-    this.data.forEach((item) => {
+    this.data?.forEach((item) => {
       const defaultItem = this.defaultItems.get(item);
       this.selectedItems.set(item, {
         selected: defaultItem ? defaultItem.selected : false,

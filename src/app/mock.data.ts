@@ -1,4 +1,4 @@
-export const data = [
+export const Users = [
   {
     id: '635d12715436602ce34008cc',
     index: 0,

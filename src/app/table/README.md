@@ -10,10 +10,17 @@
 - Empty template also availible in ng-template as let-empty="empty"
 ```
 
+## Minor features
+
+```text
+- no config state
+- no data state
+- predefined selection
+```
+
 ## Features that are under development
 
 ```text
-- Predefined selection
 - Pagination
 - Sorting
 ```

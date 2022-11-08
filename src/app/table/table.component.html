@@ -1,4 +1,7 @@
-<div class="table-responsive">
+<!-- ▲▼△▽⇅↑↓ -->
+<ng-container *ngIf="!config then noconfig  else container"></ng-container>
+<ng-template #container>
+<div class="table-container">
   <table class="table is-hoverable is-focusable is-fullwidth is-relative">
     <thead>
       <tr>
@@ -11,7 +14,7 @@
             <ng-container
               *ngSwitchCase="TableConfigColumAliases.Selecting"
             >
-              <!-- check All -->
+              <!-- check/uncheck all -->
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
                 <label class="checkbox">
                   <input type="checkbox" (change)="onSelectAll($event)">
@@ -19,7 +22,12 @@
                 </label>
               </div>
             </ng-container>
-            <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting"></ng-container>
+            <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting">
+              <!-- expand/collapse all -->
+              <button type="button" class="button is-small is-rounded is-white">
+                <ng-container>▼</ng-container>
+              </button>
+            </ng-container>
             <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
           </ng-container>
         </th>
@@ -27,6 +35,8 @@
     </thead>
 
     <tbody>
+      <ng-container *ngIf="data === null then nodata else body"></ng-container>
+      <ng-template #body>
       <ng-container *ngFor="let item of data">
         <tr>
           <td *ngFor="let column of columns">
@@ -69,33 +79,19 @@
             [ngTemplateOutlet]="templates['nested']"
             [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td></tr>
       </ng-container>
+      </ng-template>
     </tbody>
-
-    <tfoot hidden>
-      <tr>
-        <td [attr.colspan]="columns.size">
-          <nav [attr.aria-label]="config.caption ? config.caption + ' pagination' : null">
-            <ul class="pagination mb-0">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </td>
-      </tr>
-    </tfoot>
   </table>
 </div>
+</ng-template>
+
+<ng-template #nodata>
+  <tr><td [colSpan]="columns.size"><div class="card" data-e2e="no-data">
+    <div class="card-content">There are no items to display or they are loading.</div></div>
+    <p>&nbsp;</p></td></tr>
+</ng-template>
+
+<ng-template #noconfig><div class="card" data-e2e="no-config"><div class="card-content">No configuration</div></div></ng-template>
 
 <ng-template #empty let-item>&mdash;</ng-template>
 
@@ -113,8 +109,8 @@
 </ng-template>
 
 <ng-template #nesting let-item>
-  <button type="button" class="badge text-bg-dark" (click)="onToggleNested(item)">
-    <ng-container *ngIf="isNestedOpened(item)">↑</ng-container>
-    <ng-container *ngIf="!isNestedOpened(item)">↓</ng-container>
+  <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNested(item)">
+    <ng-container *ngIf="isNestedOpened(item)">▲</ng-container>
+    <ng-container *ngIf="!isNestedOpened(item)">▼</ng-container>
   </button>
 </ng-template>
