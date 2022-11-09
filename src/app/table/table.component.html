@@ -35,7 +35,9 @@
     </thead>
 
     <tbody>
-      <ng-container *ngIf="data === null then nodata else body"></ng-container>
+      <ng-container *ngIf="data == null then nodata"></ng-container>
+      <ng-container *ngIf="data?.length === 0 then emptydata"></ng-container>
+      <ng-container *ngIf="data?.length !== 0 then body"></ng-container>
       <ng-template #body>
       <ng-container *ngFor="let item of data">
         <tr>
@@ -87,7 +89,13 @@
 
 <ng-template #nodata>
   <tr><td [colSpan]="columns.size"><div class="card" data-e2e="no-data">
-    <div class="card-content">There are no items to display or they are loading.</div></div>
+    <div class="card-content">There are no items or they are loading.</div></div>
+    <p>&nbsp;</p></td></tr>
+</ng-template>
+
+<ng-template #emptydata>
+  <tr><td [colSpan]="columns.size"><div class="card" data-e2e="empty-data">
+    <div class="card-content">There are no items.</div></div>
     <p>&nbsp;</p></td></tr>
 </ng-template>
 

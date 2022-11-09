@@ -15,6 +15,7 @@
 ```text
 - no config state
 - no data state
+- empty data state
 - predefined selection
 ```
 
