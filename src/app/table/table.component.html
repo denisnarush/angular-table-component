@@ -40,7 +40,7 @@
       <ng-container *ngIf="data?.length !== 0 then body"></ng-container>
       <ng-template #body>
       <ng-container *ngFor="let item of data">
-        <tr>
+        <tr data-e2e="data-row">
           <td *ngFor="let column of columns">
             <ng-container [ngSwitch]="column.type">
               <!-- select SINGLE -->
