@@ -3,6 +3,7 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { TableComponent } from './table.component';
+import { TableSelections } from './table.interface';
 
 describe('TableComponent', () => {
   const DELAY = 5;
@@ -16,6 +17,8 @@ describe('TableComponent', () => {
   let noDataHTMLElement: HTMLElement;
   let emptyDataDebugElement: DebugElement;
   let emptyDataHTMLElement: HTMLElement;
+  let checkAllDebugElement: DebugElement;
+  let checkAllHTMLElement: HTMLElement;
 
   let rowDebugElements: DebugElement[];
 
@@ -42,6 +45,12 @@ describe('TableComponent', () => {
       By.css('[data-e2e="empty-data')
     );
     emptyDataHTMLElement = emptyDataDebugElement?.nativeElement;
+
+    checkAllDebugElement = fixture.debugElement.query(
+      By.css('[data-e2e="check-all"]')
+    );
+
+    checkAllHTMLElement = checkAllDebugElement?.nativeElement;
 
     rowDebugElements = fixture.debugElement.queryAll(
       By.css('[data-e2e="data-row')
@@ -230,5 +239,160 @@ describe('TableComponent', () => {
     expect(rowDebugElements).toBeDefined();
     expect(rowDebugElements.length).toBe(1);
     expect(rowDebugElements[0].nativeElement).toBeDefined();
+  });
+
+  it(`data item value can be described as a path`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [
+          { alias: 'id', label: 'ID' },
+          { alias: 'name.firstName', label: 'First name' },
+        ],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+          name: {
+            firstName: 'John',
+          },
+        },
+      ]);
+    });
+
+    const value =
+      rowDebugElements[0].nativeElement.querySelectorAll('td')[1].textContent;
+
+    expect(value).toBe('John');
+  });
+
+  it(`data item value described as a path will disaply empty template if not exist`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [
+          { alias: 'id', label: 'ID' },
+          { alias: 'name.lastName', label: 'Last name' },
+        ],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+          name: {
+            firstName: 'John',
+          },
+        },
+      ]);
+    });
+
+    const value =
+      rowDebugElements[0].nativeElement.querySelectorAll('td')[1].textContent;
+
+    expect(value).toBe('—');
+  });
+
+  it(`should display more than one row`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+        {
+          id: '464e619d-b3ea-4a13-826c-21474beda672',
+        },
+      ]);
+    });
+
+    expect(rowDebugElements.length).toBe(2);
+  });
+
+  it(`should not display check all if selection not provided`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(1);
+    expect(checkAllDebugElement).toBeNull();
+    expect(checkAllHTMLElement).toBeUndefined();
+  });
+
+  it(`should not have additional colum for nesting action when nesting not provided`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(1);
+  });
+
+  it(`should display column for 'check all'`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+        selection: TableSelections.Multiple,
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(2);
+    expect(
+      rowDebugElements[0].nativeElement.querySelectorAll('td').length
+    ).toBe(2);
+    expect(checkAllDebugElement).toBeDefined();
+    expect(checkAllHTMLElement).toBeDefined();
+  });
+
+  it(`should display nesting action in the row`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+        nesting: true,
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+
+    expect(
+      rowDebugElements[0].nativeElement.querySelectorAll('td').length
+    ).toBe(2);
   });
 });

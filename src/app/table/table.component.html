@@ -17,7 +17,7 @@
               <!-- check/uncheck all -->
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
                 <label class="checkbox">
-                  <input type="checkbox" (change)="onSelectAll($event)">
+                  <input type="checkbox" (change)="onSelectAll($event)" data-e2e="check-all">
                   <span></span>
                 </label>
               </div>
