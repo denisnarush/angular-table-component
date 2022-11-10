@@ -19,7 +19,11 @@ import {
   TableConfigColumAliases,
   TableConfigInterface,
   TableDataInterface,
-  TableSelections,
+  TableActions,
+  TableConfigSortingOrders,
+  TableConfigSortingOrderType,
+  TableConfigSortingColumnInterface,
+  TableConfigColumInterface,
 } from './table.interface';
 
 @Component({
@@ -31,21 +35,28 @@ import {
 export class TableComponent implements OnInit, OnChanges {
   @Input() config!: TableConfigInterface;
   @Input() data: TableDataInterface[] | null = null;
-
   @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
+
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
+  > = new EventEmitter();
+  @Output() sortingChange: EventEmitter<
+    Map<TableColumnInterface, TableConfigSortingOrderType>
   > = new EventEmitter();
 
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
   selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
+  sortedColumns: Map<TableColumnInterface, TableConfigSortingOrderType> =
+    new Map();
 
-  TableSelections = TableSelections;
+  // Enums
+  TableSelections = TableActions;
   TableConfigColumAliases = TableConfigColumAliases;
+  TableConfigSortingOrders = TableConfigSortingOrders;
 
   private opened: OpenedNestedRowTemplatesInterface = {};
   private lastSelectedItem!: TableDataInterface;
@@ -60,12 +71,14 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     this.config.columns.forEach((column) => {
-      this.columns.add({ ...column, type: TableConfigColumAliases.Regular });
+      this.columns.add({ ...column, type: this.getColumnType(column) });
     });
 
     if (this.config.nesting) {
       this.initNesting();
     }
+
+    this.initSorting();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -83,9 +96,36 @@ export class TableComponent implements OnInit, OnChanges {
     return this.opened[item[this.config.uniqIdKey]];
   }
 
-  onToggleNested(item: TableDataInterface): void {
+  getSrotingOrder(column: TableColumnInterface): TableConfigSortingOrderType {
+    const order = this.sortedColumns.get(column);
+    return order ? order : null;
+  }
+
+  onToggleNesting(item: TableDataInterface): void {
     this.opened[item[this.config.uniqIdKey]] =
       !this.opened[item[this.config.uniqIdKey]];
+  }
+
+  onToggleSorting(column: TableColumnInterface): void {
+    if (this.config.sorting?.type === TableActions.Single) {
+      // TODO: Set last sorted column order to `null`
+    }
+
+    switch (this.sortedColumns.get(column)) {
+      case TableConfigSortingOrders.Desc: {
+        this.sortedColumns.set(column, null);
+        break;
+      }
+      case TableConfigSortingOrders.Asc: {
+        this.sortedColumns.set(column, TableConfigSortingOrders.Desc);
+        break;
+      }
+      case null: {
+        this.sortedColumns.set(column, TableConfigSortingOrders.Asc);
+      }
+    }
+
+    this.sortingChange.emit(this.sortedColumns);
   }
 
   onSelectAll(event: Event): void {
@@ -102,14 +142,14 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   onSelectItem(item: TableDataInterface, event: Event): void {
-    if (this.config.selection === TableSelections.Multiple) {
+    if (this.config.selection === TableActions.Multiple) {
       this.selectedItems.set(item, {
         selected: (event.target as HTMLInputElement).checked,
         disabled: false,
       });
     }
 
-    if (this.config.selection === TableSelections.Single) {
+    if (this.config.selection === TableActions.Single) {
       if (this.lastSelectedItem != null) {
         const state = this.selectedItems.get(this.lastSelectedItem);
         this.selectedItems.set(this.lastSelectedItem, {
@@ -152,5 +192,53 @@ export class TableComponent implements OnInit, OnChanges {
 
   private initSelection(): void {
     this.columns.add(ColumnSelectingConfig);
+  }
+
+  private initSorting(): void {
+    if (this.config.sorting == null) {
+      return;
+    }
+
+    let columnsWithSorting: TableConfigSortingColumnInterface[] = [];
+
+    if (this.config.sorting.type === TableActions.Single) {
+      const columnWithSorting = this.config.sorting?.columns.find(
+        (column) => column.order !== null
+      );
+
+      if (columnWithSorting) {
+        columnsWithSorting.push(columnWithSorting);
+      }
+    }
+
+    if (this.config.sorting.type === TableActions.Multiple) {
+      columnsWithSorting =
+        this.config.sorting?.columns.filter(
+          (column) => column.order !== null
+        ) || [];
+    }
+
+    columnsWithSorting.forEach((columnWithSorting) => {
+      const column = Array.from(this.columns.values()).find(
+        (column) => columnWithSorting.alias === column.alias
+      );
+
+      if (column) {
+        this.sortedColumns.set(column, columnWithSorting.order);
+      }
+    });
+  }
+
+  private getColumnType(
+    column: TableConfigColumInterface
+  ): TableConfigColumAliases.Regular | TableConfigColumAliases.Sorting {
+    if (
+      this.config.sorting !== null &&
+      this.config.sorting?.columns.find((index) => index.alias === column.alias)
+    ) {
+      return TableConfigColumAliases.Sorting;
+    }
+
+    return TableConfigColumAliases.Regular;
   }
 }

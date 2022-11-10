@@ -28,6 +28,7 @@
                 <ng-container>▼</ng-container>
               </button>
             </ng-container>
+            <ng-container *ngSwitchCase="TableConfigColumAliases.Sorting" [ngTemplateOutlet]="sorting" [ngTemplateOutletContext]="{ $implicit: column}"></ng-container>
             <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
           </ng-container>
         </th>
@@ -117,8 +118,20 @@
 </ng-template>
 
 <ng-template #nesting let-item>
-  <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNested(item)">
+  <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNesting(item)">
     <ng-container *ngIf="isNestedOpened(item)">▲</ng-container>
     <ng-container *ngIf="!isNestedOpened(item)">▼</ng-container>
   </button>
+</ng-template>
+
+<ng-template #sorting let-column>
+  <span (click)="onToggleSorting(column)" class="is-clickable" style="border-bottom: 1px dashed">
+    {{column.label}}
+    <span class="is-pulled-right">
+      <ng-container *ngIf="getSrotingOrder(column) === TableConfigSortingOrders.Desc">▲</ng-container>
+      <ng-container *ngIf="getSrotingOrder(column) === TableConfigSortingOrders.Asc">▼</ng-container>
+      <ng-container *ngIf="getSrotingOrder(column) === null"></ng-container>
+    </span>
+  </span>
+  
 </ng-template>

@@ -3,7 +3,7 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { TableComponent } from './table.component';
-import { TableSelections } from './table.interface';
+import { TableActions } from './table.interface';
 
 describe('TableComponent', () => {
   const DELAY = 5;
@@ -358,7 +358,7 @@ describe('TableComponent', () => {
       setInput('config', {
         columns: [{ alias: 'id', label: 'ID' }],
         uniqIdKey: 'id',
-        selection: TableSelections.Multiple,
+        selection: TableActions.Multiple,
       });
       // @Input() data =
       setInput('data', [

@@ -3,7 +3,6 @@
     <app-table #main
       [config]="simpleConfig"
       [data]="vm.users"
-      [defaultItems]="defaultItems"
       [templates]="{ email, avatar, nested }"
       (selectionChange)="onSimpleSelectionChange($event)"
     ></app-table>
