@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 
 import { TableComponent } from './table.component';
 import { TableActions } from './table.interface';
+import { GetValueByPathPipe } from './table.pipes';
 
 describe('TableComponent', () => {
   const DELAY = 5;
@@ -71,7 +72,7 @@ describe('TableComponent', () => {
   beforeEach(async () => {
     jasmine.clock().install();
     await TestBed.configureTestingModule({
-      declarations: [TableComponent],
+      declarations: [TableComponent, GetValueByPathPipe],
     }).compileComponents();
 
     reCreate();

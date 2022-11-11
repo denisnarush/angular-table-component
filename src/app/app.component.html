@@ -3,13 +3,13 @@
     <app-table #main
       [config]="simpleConfig"
       [data]="vm.users"
-      [templates]="{ email, avatar, nested }"
+      [templates]="{ email, balance, nested }"
       (selectionChange)="onSimpleSelectionChange($event)"
     ></app-table>
     <div class="alert alert-light" role="alert" *ngIf="selectedData">
       <p class="lead">
         <ng-container *ngFor="let item of selectedData | keyvalue">
-          <span *ngIf="item.value.selected">{{ item.key['name'] }}<br></span>
+          <span *ngIf="item.value.selected">{{ item | json}}<br></span>
         </ng-container>
       </p>
     </div>
@@ -19,12 +19,11 @@
     <a *ngIf="data.email; else empty" [href]="'mailto:' + data.email">{{ data.email }}</a>
   </ng-template>
 
-  <ng-template #avatar let-empty="empty" let-data>
-    <img *ngIf="data.id; else empty" src="https://picsum.photos/seed/{{data.id}}/26/26" alt="">
+  <ng-template #balance let-empty="empty" let-data>
+    <div class="has-text-right">{{data.balance}}</div>
   </ng-template>
 
   <ng-template #nested let-item>
     <app-table [config]="NestedConfig"></app-table>
   </ng-template>
-
 </div>

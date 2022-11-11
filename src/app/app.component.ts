@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   simpleConfig = SimpleConfig;
   NestedConfig = NestedConfig;
 
-  selectedData!: Map<TableDataInterface, SelectedItemStateInterface>;
+  selectedData!: { [K: string]: SelectedItemStateInterface };
   defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
 
   vm$ = combineLatest([this.usersService.getUsers()]).pipe(
@@ -29,9 +29,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onSimpleSelectionChange(
-    data: Map<TableDataInterface, SelectedItemStateInterface>
-  ): void {
+  onSimpleSelectionChange(data: {
+    [K: string]: SelectedItemStateInterface;
+  }): void {
     this.selectedData = data;
   }
 }

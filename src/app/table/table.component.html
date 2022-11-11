@@ -24,7 +24,7 @@
             </ng-container>
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting">
               <!-- expand/collapse all -->
-              <button type="button" class="button is-small is-rounded is-white">
+              <button type="button" class="button is-small is-rounded is-white is-invisible">
                 <ng-container>▼</ng-container>
               </button>
             </ng-container>
@@ -58,15 +58,10 @@
               ></ng-container>
               <!-- default -->
               <ng-container *ngSwitchDefault>
-                <!-- output: regular & data -->
-                <ng-container
-                  *ngIf="!templates[column.alias]"
-                >{{ getValue(item, column.alias) }}</ng-container>
-                <!-- output: regular & no data  -->
-                <ng-container
-                  *ngIf="!templates[column.alias] && getValue(item, column.alias) == null"
-                  [ngTemplateOutlet]="empty"
-                ></ng-container>
+                <!-- output: regular -->
+                <ng-container *ngIf="!templates[column.alias]">
+                  <ng-container  *ngIf="item | getValueByPath : column.alias as value; else empty ">{{value}}</ng-container>
+                </ng-container>
                 <!-- output: template -->
                 <ng-container
                   *ngIf="templates[column.alias]"
@@ -77,10 +72,12 @@
             </ng-container>
           </td>
         </tr>
-        <tr *ngIf="config.nesting && isNestedOpened(item)">
+        <tr *ngIf="config.nesting && openedRows[item[config.uniqIdKey]]">
           <td [attr.colspan]="columns.size"><ng-container 
             [ngTemplateOutlet]="templates['nested']"
-            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td></tr>
+            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+          </td>
+        </tr>
       </ng-container>
       </ng-template>
     </tbody>
@@ -105,33 +102,34 @@
 <ng-template #empty let-item>&mdash;</ng-template>
 
 <ng-template #selecting let-item>
-  <!-- Single -->
-  <label *ngIf="config.selection === TableSelections.Single" class="radio">
-    <input type="radio" [name]="uuid" [checked]="selectedItems.get(item)?.selected" [disabled]="selectedItems.get(item)?.disabled" [value]="item.id" (change)="onSelectItem(item, $event)">
-    <span></span>
-  </label>
-  <!-- Multiple -->
-  <label *ngIf="config.selection === TableSelections.Multiple" class="checkbox">
-    <input type="checkbox" [checked]="selectedItems.get(item)?.selected" [disabled]="selectedItems.get(item)?.disabled" [name]="uuid" [value]="item.id" (change)="onSelectItem(item, $event)">
+  <label [ngClass]="{'radio' : config.selection == TableSelections.Single, 'checkbox': config.selection === TableSelections.Multiple }">
+    <input [name]="uuid"
+      [attr.type]="config.selection === TableSelections.Single ? 'radio' : 'checkbox'"
+      [checked]="selectedItems[item[config.uniqIdKey]].selected"
+      [disabled]="selectedItems[item[config.uniqIdKey]].disabled"
+      [value]="item.id"
+      (change)="onSelectItem(item, $event)">
     <span></span>
   </label>
 </ng-template>
 
 <ng-template #nesting let-item>
   <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNesting(item)">
-    <ng-container *ngIf="isNestedOpened(item)">▲</ng-container>
-    <ng-container *ngIf="!isNestedOpened(item)">▼</ng-container>
+    <ng-conatiner [ngSwitch]="openedRows[item[config.uniqIdKey]]">
+      <ng-container *ngSwitchCase="true">▲</ng-container>
+      <ng-container *ngSwitchDefault>▼</ng-container>
+    </ng-conatiner>
   </button>
 </ng-template>
 
 <ng-template #sorting let-column>
   <span (click)="onToggleSorting(column)" class="is-clickable" style="border-bottom: 1px dashed">
     {{column.label}}
-    <span class="is-pulled-right">
-      <ng-container *ngIf="getSrotingOrder(column) === TableConfigSortingOrders.Desc">▲</ng-container>
-      <ng-container *ngIf="getSrotingOrder(column) === TableConfigSortingOrders.Asc">▼</ng-container>
-      <ng-container *ngIf="getSrotingOrder(column) === null"></ng-container>
-    </span>
+    <ng-container [ngSwitch]="sortedColumns[column.alias]">
+      <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc">▲</ng-container>
+      <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc">▼</ng-container>
+      <ng-container *ngSwitchDefault></ng-container>
+    </ng-container>
   </span>
   
 </ng-template>

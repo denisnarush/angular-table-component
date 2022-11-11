@@ -1,5 +1,7 @@
 import { TemplateRef } from '@angular/core';
 
+export type TableConfigUniqIdKeyType = string;
+
 export type TableConfigSortingOrderType = 'ASC' | 'DESC' | null;
 export enum TableConfigSortingOrders {
   Asc = 'ASC',
@@ -27,7 +29,7 @@ export enum TableConfigColumAliases {
 export interface TableConfigInterface {
   caption?: string;
   columns: TableConfigColumInterface[];
-  uniqIdKey: string;
+  uniqIdKey: TableConfigUniqIdKeyType;
   selection?: TableActionType;
   nesting?: boolean;
   sorting?: TableConfigSortingInterface;
