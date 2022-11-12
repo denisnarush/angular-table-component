@@ -11,10 +11,8 @@
           [style]="{ width: column.width }"
         >
           <ng-container [ngSwitch]="column.type">
-            <ng-container
-              *ngSwitchCase="TableConfigColumAliases.Selecting"
-            >
-              <!-- check/uncheck all -->
+            <!-- select -->
+            <ng-container *ngSwitchCase="TableConfigColumAliases.Selecting">
               <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
                 <label class="checkbox">
                   <input type="checkbox" (change)="onSelectAll($event)" data-e2e="check-all">
@@ -22,13 +20,16 @@
                 </label>
               </div>
             </ng-container>
+            <!-- nesting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting">
               <!-- expand/collapse all -->
               <button type="button" class="button is-small is-rounded is-white is-invisible">
                 <ng-container>▼</ng-container>
               </button>
             </ng-container>
+            <!-- sorting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Sorting" [ngTemplateOutlet]="sorting" [ngTemplateOutletContext]="{ $implicit: column}"></ng-container>
+            <!-- default -->
             <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
           </ng-container>
         </th>
@@ -37,49 +38,12 @@
 
     <tbody>
       <ng-container *ngIf="data == null then nodata"></ng-container>
-      <ng-container *ngIf="data?.length === 0 then emptydata"></ng-container>
-      <ng-container *ngIf="data?.length !== 0 then body"></ng-container>
-      <ng-template #body>
-      <ng-container *ngFor="let item of data">
-        <tr data-e2e="data-row">
-          <td *ngFor="let column of columns">
-            <ng-container [ngSwitch]="column.type">
-              <!-- select SINGLE -->
-              <ng-container
-                *ngSwitchCase="TableConfigColumAliases.Selecting"
-                [ngTemplateOutlet]="selecting"
-                [ngTemplateOutletContext]="{ $implicit: item }"
-              ></ng-container>
-              <!-- nesting toggle -->
-              <ng-container
-                *ngSwitchCase="TableConfigColumAliases.Nesting"
-                [ngTemplateOutlet]="nesting"
-                [ngTemplateOutletContext]="{ $implicit: item }"
-              ></ng-container>
-              <!-- default -->
-              <ng-container *ngSwitchDefault>
-                <!-- output: regular -->
-                <ng-container *ngIf="!templates[column.alias]">
-                  <ng-container  *ngIf="item | getValueByPath : column.alias as value; else empty ">{{value}}</ng-container>
-                </ng-container>
-                <!-- output: template -->
-                <ng-container
-                  *ngIf="templates[column.alias]"
-                  [ngTemplateOutlet]="templates[column.alias]"
-                  [ngTemplateOutletContext]="{ $implicit: item, empty: empty }"
-                ></ng-container>
-              </ng-container>
-            </ng-container>
-          </td>
-        </tr>
-        <tr *ngIf="config.nesting && openedRows[item[config.uniqIdKey]]">
-          <td [attr.colspan]="columns.size"><ng-container 
-            [ngTemplateOutlet]="templates['nested']"
-            [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
-          </td>
-        </tr>
+      <ng-container *ngIf="data?.length !== 0; else emptydata">
+        <ng-container *ngFor="let item of data"
+          [ngTemplateOutlet]="row"
+          [ngTemplateOutletContext]="{$implicit: item, isOpened: (openedRows | getMapValueByKey : item)}">
+        </ng-container>
       </ng-container>
-      </ng-template>
     </tbody>
   </table>
 </div>
@@ -113,9 +77,9 @@
   </label>
 </ng-template>
 
-<ng-template #nesting let-item>
+<ng-template #nesting let-item let-isOpened="isOpened">
   <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNesting(item)">
-    <ng-conatiner [ngSwitch]="openedRows[item[config.uniqIdKey]]">
+    <ng-conatiner [ngSwitch]="isOpened">
       <ng-container *ngSwitchCase="true">▲</ng-container>
       <ng-container *ngSwitchDefault>▼</ng-container>
     </ng-conatiner>
@@ -131,5 +95,41 @@
       <ng-container *ngSwitchDefault></ng-container>
     </ng-container>
   </span>
-  
+</ng-template>
+
+<ng-template #row let-item let-isOpened="isOpened">
+  <tr data-e2e="data-row">
+    <td *ngFor="let column of columns">
+      <ng-container [ngSwitch]="column.type">
+        <!-- select SINGLE -->
+        <ng-container
+          *ngSwitchCase="TableConfigColumAliases.Selecting"
+          [ngTemplateOutlet]="selecting"
+          [ngTemplateOutletContext]="{ $implicit: item }"
+        ></ng-container>
+        <!-- nesting toggle -->
+        <ng-container
+          *ngSwitchCase="TableConfigColumAliases.Nesting"
+          [ngTemplateOutlet]="nesting"
+          [ngTemplateOutletContext]="{ $implicit: item, isOpened: isOpened}"
+        ></ng-container>
+        <!-- default -->
+        <ng-container *ngSwitchDefault>
+          <!-- output: regular -->
+          <ng-container *ngIf="!templates[column.alias]">
+            <ng-container  *ngIf="item | getValueByPath : column.alias as value; else empty ">{{value}}</ng-container>
+          </ng-container>
+          <!-- output: template -->
+          <ng-container
+            *ngIf="templates[column.alias]"
+            [ngTemplateOutlet]="templates[column.alias]"
+            [ngTemplateOutletContext]="{ $implicit: item, empty: empty }"
+          ></ng-container>
+        </ng-container>
+      </ng-container>
+    </td>
+  </tr>
+  <tr *ngIf="config.nesting && isOpened">
+    <td [attr.colspan]="columns.size"><ng-container [ngTemplateOutlet]="templates['nested']" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td>
+  </tr>
 </ng-template>

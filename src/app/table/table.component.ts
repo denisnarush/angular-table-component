@@ -48,9 +48,10 @@ export class TableComponent implements OnInit, OnChanges {
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
 
-  openedRows: { [K: string]: boolean } = {};
   sortedColumns: { [A: string]: TableConfigSortingOrderType } = {};
   selectedItems: { [K: string]: SelectedItemStateInterface } = {};
+
+  openedRows: Map<TableDataInterface, boolean> = new Map();
 
   // Enums
   TableSelections = TableActions;
@@ -90,8 +91,8 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   onToggleNesting(item: TableDataInterface): void {
-    this.openedRows[item[this.config.uniqIdKey]] =
-      !this.openedRows[item[this.config.uniqIdKey]];
+    this.openedRows.set(item, !this.openedRows.get(item));
+    this.openedRows = new Map(this.openedRows);
   }
 
   onToggleSorting(column: TableColumnInterface): void {

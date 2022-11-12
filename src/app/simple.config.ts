@@ -24,7 +24,7 @@ export const SimpleConfig: TableConfigInterface = {
     {
       label: 'Balance',
       alias: 'balance',
-      width: '0',
+      width: '6em',
     },
   ],
   uniqIdKey: 'id',

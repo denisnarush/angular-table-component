@@ -11,3 +11,10 @@ export class GetValueByPathPipe implements PipeTransform {
     return object == null ? null : `${object}`;
   }
 }
+
+@Pipe({ name: 'getMapValueByKey' })
+export class GetMapValueByKeyPipe implements PipeTransform {
+  transform(value: Map<any, any>, key: any) {
+    return value.get(key);
+  }
+}

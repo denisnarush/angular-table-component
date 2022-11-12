@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableComponent } from './table.component';
-import { GetValueByPathPipe } from './table.pipes';
+import { GetMapValueByKeyPipe, GetValueByPathPipe } from './table.pipes';
 
 @NgModule({
-  declarations: [TableComponent, GetValueByPathPipe],
+  declarations: [TableComponent, GetValueByPathPipe, GetMapValueByKeyPipe],
   imports: [CommonModule],
   exports: [TableComponent],
 })
