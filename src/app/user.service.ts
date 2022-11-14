@@ -14,6 +14,10 @@ export interface UserInterface {
 export class UserService {
   constructor() {}
 
+  getData(): UserInterface[] {
+    return Users;
+  }
+
   getUsers(): Observable<UserInterface[]> {
     return of(Users).pipe(delay(DELAY));
   }

@@ -178,6 +178,7 @@ export class TableComponent implements OnInit, OnChanges {
         ([item, state]) => item && state.selected
       );
       if (item) {
+        this.selectedItems.set(item[0], item[1]);
         this.lastSelectedRow = item;
       }
     }

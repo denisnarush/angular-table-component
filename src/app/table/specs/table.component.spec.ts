@@ -2,12 +2,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
-import { TableComponent } from './table.component';
-import { TableActions } from './table.interface';
-import { GetMapValueByKeyPipe, GetValueByPathPipe } from './table.pipes';
+import { TableComponent } from './../table.component';
+import { GetMapValueByKeyPipe, GetValueByPathPipe } from './../table.pipes';
 
-describe('TableComponent', () => {
-  const DELAY = 5;
+import { SelectionDescribe } from './suite.selection';
+
+describe('TableComponent/general', () => {
+  const DATA = [
+    {
+      id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+    },
+    {
+      id: '464e619d-b3ea-4a13-826c-21474beda672',
+    },
+    {
+      id: '2deaafd8-4c0c-4b98-aa70-2d25c35ddf5f',
+    },
+  ];
+
   let component: TableComponent;
   let fixture: ComponentFixture<TableComponent>;
   let rootDebugElement: DebugElement;
@@ -70,17 +82,12 @@ describe('TableComponent', () => {
   }
 
   beforeEach(async () => {
-    jasmine.clock().install();
     await TestBed.configureTestingModule({
       declarations: [TableComponent, GetValueByPathPipe, GetMapValueByKeyPipe],
     }).compileComponents();
 
     reCreate();
     fixture.detectChanges();
-  });
-
-  afterEach(async () => {
-    jasmine.clock().uninstall();
   });
 
   it('should create', () => {
@@ -216,15 +223,8 @@ describe('TableComponent', () => {
       setInput('data', null);
     });
 
-    setTimeout(() => {
-      fixture.componentRef.setInput('data', [
-        {
-          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
-        },
-      ]);
-    }, DELAY);
+    fixture.componentRef.setInput('data', [DATA[0]]);
 
-    jasmine.clock().tick(DELAY);
     fixture.detectChanges();
     reInitElements();
 
@@ -304,76 +304,10 @@ describe('TableComponent', () => {
         uniqIdKey: 'id',
       });
       // @Input() data =
-      setInput('data', [
-        {
-          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
-        },
-        {
-          id: '464e619d-b3ea-4a13-826c-21474beda672',
-        },
-      ]);
+      setInput('data', DATA);
     });
 
-    expect(rowDebugElements.length).toBe(2);
-  });
-
-  it(`should not display check all if selection not provided`, () => {
-    init(() => {
-      // @Input() config =
-      setInput('config', {
-        columns: [{ alias: 'id', label: 'ID' }],
-        uniqIdKey: 'id',
-      });
-      // @Input() data =
-      setInput('data', [
-        {
-          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
-        },
-      ]);
-    });
-    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(1);
-    expect(checkAllDebugElement).toBeNull();
-    expect(checkAllHTMLElement).toBeUndefined();
-  });
-
-  it(`should not have additional colum for nesting action when nesting not provided`, () => {
-    init(() => {
-      // @Input() config =
-      setInput('config', {
-        columns: [{ alias: 'id', label: 'ID' }],
-        uniqIdKey: 'id',
-      });
-      // @Input() data =
-      setInput('data', [
-        {
-          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
-        },
-      ]);
-    });
-    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(1);
-  });
-
-  it(`should display column for 'check all'`, () => {
-    init(() => {
-      // @Input() config =
-      setInput('config', {
-        columns: [{ alias: 'id', label: 'ID' }],
-        uniqIdKey: 'id',
-        selection: TableActions.Multiple,
-      });
-      // @Input() data =
-      setInput('data', [
-        {
-          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
-        },
-      ]);
-    });
-    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(2);
-    expect(
-      rowDebugElements[0].nativeElement.querySelectorAll('td').length
-    ).toBe(2);
-    expect(checkAllDebugElement).toBeDefined();
-    expect(checkAllHTMLElement).toBeDefined();
+    expect(rowDebugElements.length).toBe(3);
   });
 
   it(`should display nesting action in the row`, () => {
@@ -396,4 +330,23 @@ describe('TableComponent', () => {
       rowDebugElements[0].nativeElement.querySelectorAll('td').length
     ).toBe(2);
   });
+
+  it(`should not have additional colum for nesting action when nesting not provided`, () => {
+    init(() => {
+      // @Input() config =
+      setInput('config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      setInput('data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+    expect(rootHtmlElement.querySelectorAll('thead tr th').length).toBe(1);
+  });
 });
+
+describe('TableComponent/selection', SelectionDescribe);

@@ -4,6 +4,7 @@
       [config]="simpleConfig"
       [data]="vm.users"
       [templates]="{ email, balance, nested }"
+      [defaultItems]="defaultItems"
       (selectionChange)="onSimpleSelectionChange($event)"
     ></app-table>
     <div class="alert alert-light" role="alert" *ngIf="selectedData">

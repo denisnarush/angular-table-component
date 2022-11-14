@@ -25,7 +25,11 @@ export class AppComponent {
     map(([users]) => ({ users }))
   );
 
-  constructor(private usersService: UserService) {}
+  constructor(private usersService: UserService) {
+    this.defaultItems = new Map([
+      [usersService.getData()[1], { selected: true, disabled: false }],
+    ]);
+  }
 
   onSimpleSelectionChange(
     data: Map<TableDataInterface, SelectedItemStateInterface>

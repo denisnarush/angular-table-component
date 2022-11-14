@@ -13,24 +13,25 @@
           <ng-container [ngSwitch]="column.type">
             <!-- select -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Selecting">
-              <div *ngIf="config.selection === TableSelections.Multiple" class="form-check">
-                <label class="checkbox">
+              <div class="form-check">
+                <!-- check all -->
+                <label *ngIf="config.selection === TableSelections.Multiple" class="checkbox">
                   <input type="checkbox" (change)="onSelectAll($event)" data-e2e="check-all">
                   <span></span>
                 </label>
+                <!-- reserved elemen. it won't let the table jump -->
+                <label *ngIf="config.selection === TableSelections.Single" class="radio"><input type="radio" class="is-invisible" disabled></label>
               </div>
             </ng-container>
             <!-- nesting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting">
               <!-- expand/collapse all -->
-              <button type="button" class="button is-small is-rounded is-white is-invisible">
-                <ng-container>▼</ng-container>
-              </button>
+              <button type="button" class="button is-small is-rounded is-white is-invisible"><ng-container>▼</ng-container></button>
             </ng-container>
             <!-- sorting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Sorting" [ngTemplateOutlet]="sorting" [ngTemplateOutletContext]="{ $implicit: column}"></ng-container>
             <!-- default -->
-            <ng-container *ngSwitchDefault>{{ column.label }}</ng-container>
+            <ng-container *ngSwitchDefault><span class="is-unselectable" data-e2e="label">{{ column.label }}</span></ng-container>
           </ng-container>
         </th>
       </tr>
@@ -87,10 +88,10 @@
 </ng-template>
 
 <ng-template #sorting let-column>
-  <span (click)="onToggleSorting(column)" class="is-clickable" style="border-bottom: 1px dashed">
+  <span class="is-clickable is-unselectable" style="border-bottom: 1px dashed" data-e2e="label sortable" (click)="onToggleSorting(column)">
     {{column.label}}
-    <ng-container *ngIf="sortedColumns | getMapValueByKey : column as sorting">
-      <ng-container [ngSwitch]="sorting.order">
+    <ng-container *ngIf="sortedColumns | getMapValueByKey : column as value">
+      <ng-container [ngSwitch]="value.order">
         <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc">▲</ng-container>
         <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc">▼</ng-container>
         <ng-container *ngSwitchDefault></ng-container>
