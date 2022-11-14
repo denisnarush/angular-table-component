@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { combineLatest, map, startWith } from 'rxjs';
 import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
@@ -13,11 +13,11 @@ import { UserService } from './user.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   simpleConfig = SimpleConfig;
   NestedConfig = NestedConfig;
 
-  selectedData!: { [K: string]: SelectedItemStateInterface };
+  selectedData!: TableDataInterface[];
   defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
 
   vm$ = combineLatest([this.usersService.getUsers()]).pipe(
@@ -27,11 +27,15 @@ export class AppComponent implements OnInit {
 
   constructor(private usersService: UserService) {}
 
-  ngOnInit(): void {}
-
-  onSimpleSelectionChange(data: {
-    [K: string]: SelectedItemStateInterface;
-  }): void {
-    this.selectedData = data;
+  onSimpleSelectionChange(
+    data: Map<TableDataInterface, SelectedItemStateInterface>
+  ): void {
+    const newArra = [];
+    for (const [item, state] of data) {
+      if (state.selected) {
+        newArra.push(item);
+      }
+    }
+    this.selectedData = newArra;
   }
 }

@@ -38,9 +38,9 @@ export class TableComponent implements OnInit, OnChanges {
     new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
 
-  @Output() selectionChange: EventEmitter<{
-    [K: string]: SelectedItemStateInterface;
-  }> = new EventEmitter();
+  @Output() selectionChange: EventEmitter<
+    Map<TableDataInterface, SelectedItemStateInterface>
+  > = new EventEmitter();
   @Output() sortingChange: EventEmitter<{
     [A: string]: TableConfigSortingOrderType;
   }> = new EventEmitter();
@@ -49,8 +49,9 @@ export class TableComponent implements OnInit, OnChanges {
   columns: Set<TableColumnInterface> = new Set();
 
   sortedColumns: { [A: string]: TableConfigSortingOrderType } = {};
-  selectedItems: { [K: string]: SelectedItemStateInterface } = {};
 
+  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
+    new Map();
   openedRows: Map<TableDataInterface, boolean> = new Map();
 
   // Enums
@@ -121,13 +122,13 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   onSelectAll(event: Event): void {
-    for (const uniqIdKey in this.selectedItems) {
-      this.selectedItems[uniqIdKey] = {
-        selected: this.selectedItems[uniqIdKey].disabled
-          ? this.selectedItems[uniqIdKey].selected
+    for (const [item, state] of this.selectedItems) {
+      this.selectedItems.set(item, {
+        selected: state.disabled
+          ? state.selected
           : (event.target as HTMLInputElement).checked,
-        disabled: this.selectedItems[uniqIdKey].disabled,
-      };
+        disabled: state.disabled,
+      });
     }
 
     this.selectionChange.emit(this.selectedItems);
@@ -135,25 +136,21 @@ export class TableComponent implements OnInit, OnChanges {
 
   onSelectItem(item: TableDataInterface, event: Event): void {
     if (this.config.selection === TableActions.Multiple) {
-      this.selectedItems[item[this.config.uniqIdKey]] = {
+      this.selectedItems.set(item, {
         selected: (event.target as HTMLInputElement).checked,
         disabled: false,
-      };
+      });
     }
 
     if (this.config.selection === TableActions.Single) {
       if (this.lastSelectedItem != null) {
-        const state =
-          this.selectedItems[this.lastSelectedItem[this.config.uniqIdKey]];
-        this.selectedItems[this.lastSelectedItem[this.config.uniqIdKey]] = {
+        const state = this.selectedItems.get(this.lastSelectedItem);
+        this.selectedItems.set(item, {
           selected: false,
           disabled: state ? state.disabled : false,
-        };
+        });
       }
-      this.selectedItems[item[this.config.uniqIdKey]] = {
-        selected: true,
-        disabled: false,
-      };
+      this.selectedItems.set(item, { selected: true, disabled: false });
       this.lastSelectedItem = item;
     }
 
@@ -162,15 +159,21 @@ export class TableComponent implements OnInit, OnChanges {
 
   private initSelectedItems(): void {
     this.data?.forEach((item) => {
-      const defaultItem = this.defaultItems.get(item);
-      this.selectedItems[item[this.config.uniqIdKey]] = {
-        selected: defaultItem ? defaultItem.selected : false,
-        disabled: defaultItem ? defaultItem.disabled : false,
-      };
-      this.lastSelectedItem = defaultItem?.selected
-        ? item
-        : this.lastSelectedItem;
+      const state = this.defaultItems.get(item);
+      this.selectedItems.set(item, {
+        selected: state ? state.selected : false,
+        disabled: state ? state.disabled : false,
+      });
     });
+
+    if (this.config.selection === TableActions.Single) {
+      const item = Array.from(this.defaultItems.entries()).find(
+        ([item, state]) => item && state.selected
+      );
+      if (item) {
+        this.lastSelectedItem = item;
+      }
+    }
   }
 
   private initNesting(): void {

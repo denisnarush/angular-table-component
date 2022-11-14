@@ -7,11 +7,9 @@
       (selectionChange)="onSimpleSelectionChange($event)"
     ></app-table>
     <div class="alert alert-light" role="alert" *ngIf="selectedData">
-      <p class="lead">
-        <ng-container *ngFor="let item of selectedData | keyvalue">
-          <span *ngIf="item.value.selected">{{ item | json}}<br></span>
-        </ng-container>
-      </p>
+      <ng-container *ngFor="let item of selectedData">
+        <div class="block">{{ item['name']}}</div>
+      </ng-container>
     </div>
   </div>
 
