@@ -41,15 +41,15 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
   > = new EventEmitter();
-  @Output() sortingChange: EventEmitter<{
-    [A: string]: TableConfigSortingOrderType;
-  }> = new EventEmitter();
+  @Output() sortingChange: EventEmitter<
+    Map<TableColumnInterface, TableConfigSortingColumnInterface>
+  > = new EventEmitter();
 
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
 
-  sortedColumns: { [A: string]: TableConfigSortingOrderType } = {};
-
+  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> =
+    new Map();
   selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
   openedRows: Map<TableDataInterface, boolean> = new Map();
@@ -59,8 +59,8 @@ export class TableComponent implements OnInit, OnChanges {
   TableConfigColumAliases = TableConfigColumAliases;
   TableConfigSortingOrders = TableConfigSortingOrders;
 
-  private lastSelectedItem!: TableDataInterface;
-  private lastSortedItem!: string;
+  private lastSelectedRow!: TableDataInterface;
+  private lastSortedColumn!: TableColumnInterface;
 
   ngOnInit(): void {
     if (this.config == null) {
@@ -98,26 +98,33 @@ export class TableComponent implements OnInit, OnChanges {
 
   onToggleSorting(column: TableColumnInterface): void {
     if (this.config.sorting?.type === TableActions.Single) {
-      if (column.alias !== this.lastSortedItem) {
-        delete this.sortedColumns[this.lastSortedItem];
-        this.lastSortedItem = column.alias;
+      if (column.alias === this.lastSortedColumn?.alias) {
+        this.sortedColumns.delete(this.lastSortedColumn);
+        this.lastSortedColumn = column;
       }
     }
 
-    switch (this.sortedColumns[column.alias]) {
+    switch (this.sortedColumns.get(column)?.order) {
       case TableConfigSortingOrders.Desc: {
-        this.sortedColumns[column.alias] = null;
+        this.sortedColumns.set(column, { alias: column.alias, order: null });
         break;
       }
       case TableConfigSortingOrders.Asc: {
-        this.sortedColumns[column.alias] = TableConfigSortingOrders.Desc;
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: TableConfigSortingOrders.Desc,
+        });
         break;
       }
       default: {
-        this.sortedColumns[column.alias] = TableConfigSortingOrders.Asc;
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: TableConfigSortingOrders.Asc,
+        });
       }
     }
 
+    this.sortedColumns = new Map(this.sortedColumns);
     this.sortingChange.emit(this.sortedColumns);
   }
 
@@ -143,15 +150,15 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (this.config.selection === TableActions.Single) {
-      if (this.lastSelectedItem != null) {
-        const state = this.selectedItems.get(this.lastSelectedItem);
+      if (this.lastSelectedRow != null) {
+        const state = this.selectedItems.get(this.lastSelectedRow);
         this.selectedItems.set(item, {
           selected: false,
           disabled: state ? state.disabled : false,
         });
       }
       this.selectedItems.set(item, { selected: true, disabled: false });
-      this.lastSelectedItem = item;
+      this.lastSelectedRow = item;
     }
 
     this.selectionChange.emit(this.selectedItems);
@@ -171,7 +178,7 @@ export class TableComponent implements OnInit, OnChanges {
         ([item, state]) => item && state.selected
       );
       if (item) {
-        this.lastSelectedItem = item;
+        this.lastSelectedRow = item;
       }
     }
   }
@@ -187,17 +194,6 @@ export class TableComponent implements OnInit, OnChanges {
   private initSorting(): void {
     let columnsWithSorting: TableConfigSortingColumnInterface[] = [];
 
-    if (this.config.sorting?.type === TableActions.Single) {
-      const columnWithSorting = this.config.sorting?.columns.find(
-        (column) => column.order !== null
-      );
-
-      if (columnWithSorting) {
-        columnsWithSorting.push(columnWithSorting);
-        this.lastSortedItem = columnWithSorting.alias;
-      }
-    }
-
     if (this.config.sorting?.type === TableActions.Multiple) {
       columnsWithSorting =
         this.config.sorting?.columns.filter(
@@ -211,7 +207,12 @@ export class TableComponent implements OnInit, OnChanges {
       );
 
       if (column) {
-        this.sortedColumns[column.alias] = columnWithSorting.order;
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: columnWithSorting.order,
+        });
+
+        this.lastSortedColumn = column;
       }
     });
   }
