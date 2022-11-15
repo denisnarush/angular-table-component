@@ -20,9 +20,9 @@ import {
   TableDataInterface,
   TableActions,
   TableConfigSortingOrders,
-  TableConfigSortingOrderType,
   TableConfigSortingColumnInterface,
   TableConfigColumInterface,
+  TableColumnType,
 } from './table.interface';
 
 @Component({
@@ -84,10 +84,6 @@ export class TableComponent implements OnInit, OnChanges {
     if (changes['defaultItems']) {
       this.initSelectedItems();
       this.selectionChange.emit(this.selectedItems);
-    }
-
-    if (changes['data']?.currentValue !== null) {
-      this.initSelectedItems();
     }
   }
 
@@ -151,11 +147,7 @@ export class TableComponent implements OnInit, OnChanges {
 
     if (this.config.selection === TableActions.Single) {
       if (this.lastSelectedRow != null) {
-        const state = this.selectedItems.get(this.lastSelectedRow);
-        this.selectedItems.set(item, {
-          selected: false,
-          disabled: state ? state.disabled : false,
-        });
+        this.selectedItems.delete(this.lastSelectedRow);
       }
       this.selectedItems.set(item, { selected: true, disabled: false });
       this.lastSelectedRow = item;
@@ -165,23 +157,24 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private initSelectedItems(): void {
-    this.data?.forEach((item) => {
-      const state = this.defaultItems.get(item);
-      this.selectedItems.set(item, {
-        selected: state ? state.selected : false,
-        disabled: state ? state.disabled : false,
-      });
-    });
-
-    if (this.config.selection === TableActions.Single) {
-      const item = Array.from(this.defaultItems.entries()).find(
-        ([item, state]) => item && state.selected
-      );
-      if (item) {
-        this.selectedItems.set(item[0], item[1]);
-        this.lastSelectedRow = item;
+    this.defaultItems.forEach((state, item) => {
+      if (this.config.selection === TableActions.Single) {
+        if (state.selected && this.lastSelectedRow == null) {
+          this.lastSelectedRow = item;
+          this.selectedItems.set(item, {
+            selected: state.selected,
+            disabled: state.disabled,
+          });
+        }
       }
-    }
+
+      if (this.config.selection === TableActions.Multiple) {
+        this.selectedItems.set(item, {
+          selected: state.selected,
+          disabled: state.disabled,
+        });
+      }
+    });
   }
 
   private initNesting(): void {
@@ -218,9 +211,7 @@ export class TableComponent implements OnInit, OnChanges {
     });
   }
 
-  private getColumnType(
-    column: TableConfigColumInterface
-  ): TableConfigColumAliases.Regular | TableConfigColumAliases.Sorting {
+  private getColumnType(column: TableConfigColumInterface): TableColumnType {
     if (
       this.config.sorting !== null &&
       this.config.sorting?.columns.find((index) => index.alias === column.alias)

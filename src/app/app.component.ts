@@ -28,18 +28,19 @@ export class AppComponent {
   constructor(private usersService: UserService) {
     this.defaultItems = new Map([
       [usersService.getData()[1], { selected: true, disabled: false }],
+      [usersService.getData()[3], { selected: true, disabled: false }],
     ]);
   }
 
   onSimpleSelectionChange(
     data: Map<TableDataInterface, SelectedItemStateInterface>
   ): void {
-    const newArra = [];
-    for (const [item, state] of data) {
+    const newArra: TableDataInterface[] = [];
+    data.forEach((state, item) => {
       if (state.selected) {
         newArra.push(item);
       }
-    }
+    });
     this.selectedData = newArra;
   }
 }

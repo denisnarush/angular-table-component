@@ -70,8 +70,8 @@
   <label [ngClass]="{'radio' : config.selection == TableSelections.Single, 'checkbox': config.selection === TableSelections.Multiple }">
     <input [name]="uuid"
       [attr.type]="config.selection === TableSelections.Single ? 'radio' : 'checkbox'"
-      [checked]="(selectedItems | getMapValueByKey: item).selected"
-      [disabled]="(selectedItems | getMapValueByKey: item).disabled"
+      [checked]="(selectedItems | getMapValueByKey: item)?.selected"
+      [disabled]="(selectedItems | getMapValueByKey: item)?.disabled"
       [value]="item.id"
       (change)="onSelectItem(item, $event)">
     <span></span>

@@ -55,12 +55,14 @@ export interface TableConfigSortingInterface {
   columns: TableConfigSortingColumnInterface[];
 }
 
+export type TableColumnType =
+  | TableConfigColumAliases.Regular
+  | TableConfigColumAliases.Nesting
+  | TableConfigColumAliases.Selecting
+  | TableConfigColumAliases.Sorting;
+
 export interface TableColumnInterface extends TableConfigColumInterface {
-  type:
-    | TableConfigColumAliases.Regular
-    | TableConfigColumAliases.Nesting
-    | TableConfigColumAliases.Selecting
-    | TableConfigColumAliases.Sorting;
+  type: TableColumnType;
 }
 
 export interface ColumnsTemplatesInterface {
