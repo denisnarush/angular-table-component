@@ -441,4 +441,24 @@ export const SelectionDescribe = () => {
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
   });
+
+  it(`when some items are selected then Check All should be partial. Case Multiple`, () => {
+    expect(0).toBeFalse();
+  });
+
+  it(`when all items are selected then Check All should be checked. Case Multiple`, () => {
+    expect(1).toBeFalse();
+  });
+
+  it(`when uncheck one item from all checked items then Check All should be partial. Case Multiple`, () => {
+    expect(2).toBeFalse();
+  });
+
+  it(`when none items is checked then Check All should be uncheced. Case Multiple`, () => {
+    expect(3).toBeFalse();
+  });
+
+  it(`when some items checked and click on Check All then Check All and all items should be checked. Case Multiple`, () => {
+    expect(4).toBeFalse();
+  });
 };

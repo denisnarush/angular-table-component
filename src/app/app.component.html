@@ -1,16 +1,23 @@
 <div *ngIf="vm$ | async as vm" class="section">
   <div class="conatiner">
-    <app-table #main
-      [config]="simpleConfig"
-      [data]="vm.users"
-      [templates]="{ email, balance, nested }"
-      [defaultItems]="defaultItems"
-      (selectionChange)="onSimpleSelectionChange($event)"
-    ></app-table>
-    <div class="alert alert-light" role="alert" *ngIf="selectedData">
-      <ng-container *ngFor="let item of selectedData">
-        <div class="block">{{ item['name']}}</div>
+    <div class="content">
+      <app-table #main
+        [config]="simpleConfig"
+        [data]="vm.users"
+        [templates]="{ email, balance, nested }"
+        [defaultItems]="defaultItems"
+        (selectionChange)="onSimpleSelectionChange($event)"
+        (sortChange)="onSimpleSortChange($event)"
+      ></app-table>
+    </div>
+    
+    <div class="notification" role="alert" *ngIf="selectedData">
+      <strong *ngIf="selectedData.length">Selected: </strong>
+      <ng-container *ngFor="let item of selectedData; last as last ">
+        <span class="block">{{ item['name']}}</span>
+        <ng-container *ngIf="!last">, </ng-container>
       </ng-container>
+      <strong *ngIf="!selectedData.length">Choose something.</strong>
     </div>
   </div>
 

@@ -4,6 +4,8 @@ import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
 import {
   SelectedItemStateInterface,
+  TableColumnInterface,
+  TableConfigSortingColumnInterface,
   TableDataInterface,
 } from './table/table.interface';
 import { UserService } from './user.service';
@@ -18,6 +20,7 @@ export class AppComponent {
   NestedConfig = NestedConfig;
 
   selectedData!: TableDataInterface[];
+  orderValue!: TableConfigSortingColumnInterface[];
   defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
 
   vm$ = combineLatest([this.usersService.getUsers()]).pipe(
@@ -42,5 +45,11 @@ export class AppComponent {
       }
     });
     this.selectedData = newArra;
+  }
+
+  onSimpleSortChange(
+    data: Map<TableColumnInterface, TableConfigSortingColumnInterface>
+  ): void {
+    this.orderValue = Array.from(data.values());
   }
 }

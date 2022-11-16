@@ -41,7 +41,7 @@ export class TableComponent implements OnInit, OnChanges {
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
   > = new EventEmitter();
-  @Output() sortingChange: EventEmitter<
+  @Output() sortChange: EventEmitter<
     Map<TableColumnInterface, TableConfigSortingColumnInterface>
   > = new EventEmitter();
 
@@ -94,7 +94,7 @@ export class TableComponent implements OnInit, OnChanges {
 
   onToggleSorting(column: TableColumnInterface): void {
     if (this.config.sorting?.type === TableActions.Single) {
-      if (column.alias === this.lastSortedColumn?.alias) {
+      if (column.alias !== this.lastSortedColumn?.alias) {
         this.sortedColumns.delete(this.lastSortedColumn);
         this.lastSortedColumn = column;
       }
@@ -121,19 +121,22 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     this.sortedColumns = new Map(this.sortedColumns);
-    this.sortingChange.emit(this.sortedColumns);
+    this.sortChange.emit(this.sortedColumns);
   }
 
   onSelectAll(event: Event): void {
-    for (const [item, state] of this.selectedItems) {
-      this.selectedItems.set(item, {
-        selected: state.disabled
-          ? state.selected
-          : (event.target as HTMLInputElement).checked,
-        disabled: state.disabled,
+    this.data?.forEach((value) => {
+      const item = this.selectedItems.get(value);
+      this.selectedItems.set(value, {
+        selected:
+          item && item.disabled
+            ? item.selected
+            : (event.target as HTMLInputElement).checked,
+        disabled: item ? item.disabled : false,
       });
-    }
+    });
 
+    this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
   }
 
@@ -186,16 +189,8 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private initSorting(): void {
-    let columnsWithSorting: TableConfigSortingColumnInterface[] = [];
-
-    if (this.config.sorting?.type === TableActions.Multiple) {
-      columnsWithSorting =
-        this.config.sorting?.columns.filter(
-          (column) => column.order !== null
-        ) || [];
-    }
-
-    columnsWithSorting.forEach((columnWithSorting) => {
+    if (this.config.sorting?.type === TableActions.Single) {
+      const columnWithSorting = this.config.sorting.columns[0];
       const column = Array.from(this.columns.values()).find(
         (column) => columnWithSorting.alias === column.alias
       );
@@ -208,7 +203,22 @@ export class TableComponent implements OnInit, OnChanges {
 
         this.lastSortedColumn = column;
       }
-    });
+    }
+
+    if (this.config.sorting?.type === TableActions.Multiple) {
+      this.config.sorting.columns.forEach((columnWithSorting) => {
+        const column = Array.from(this.columns.values()).find(
+          (column) => columnWithSorting.alias === column.alias
+        );
+
+        if (column) {
+          this.sortedColumns.set(column, {
+            alias: column.alias,
+            order: columnWithSorting.order,
+          });
+        }
+      });
+    }
   }
 
   private getColumnType(column: TableConfigColumInterface): TableColumnType {

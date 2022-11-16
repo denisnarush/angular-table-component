@@ -37,6 +37,10 @@ export const SimpleConfig: TableConfigInterface = {
         alias: 'name',
         order: TableConfigSortingOrders.Asc,
       },
+      {
+        alias: 'email',
+        order: TableConfigSortingOrders.Asc,
+      },
     ],
   },
 };

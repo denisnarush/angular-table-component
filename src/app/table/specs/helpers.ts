@@ -26,7 +26,12 @@ export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
   SCOPE.DEBUG_ELEMENTS['ROOT'] = SCOPE.FIXTURE.debugElement.query(
     By.css('.table-container')
   );
-  SCOPE.HTML_ELEMENTS['ROOT'] = SCOPE.DEBUG_ELEMENTS['ROOT'].nativeElement;
+  SCOPE.HTML_ELEMENTS['ROOT'] = SCOPE.DEBUG_ELEMENTS['ROOT']?.nativeElement;
+  SCOPE.DEBUG_ELEMENTS['HEADER'] = SCOPE.FIXTURE.debugElement.query(
+    By.css('thead')
+  );
+  SCOPE.HTML_ELEMENTS['HEADER'] = SCOPE.DEBUG_ELEMENTS['HEADER']?.nativeElement;
+
   // noConfigDebugElement = fixture.debugElement.query(
   //   By.css('[data-e2e="no-config')
   // );

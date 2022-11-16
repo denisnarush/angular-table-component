@@ -92,8 +92,8 @@
     {{column.label}}
     <ng-container *ngIf="sortedColumns | getMapValueByKey : column as value">
       <ng-container [ngSwitch]="value.order">
-        <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc">▲</ng-container>
-        <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc">▼</ng-container>
+        <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc"><span data-e2e="direction desc">▲</span></ng-container>
+        <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc"><span data-e2e="direction asc">▼</span></ng-container>
         <ng-container *ngSwitchDefault></ng-container>
       </ng-container>
     </ng-container>

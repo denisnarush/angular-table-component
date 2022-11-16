@@ -6,6 +6,7 @@ import { TableComponent } from './../table.component';
 import { GetMapValueByKeyPipe, GetValueByPathPipe } from './../table.pipes';
 
 import { SelectionDescribe } from './suite.selection';
+import { SortingSuite } from './suite.sorting';
 
 describe('TableComponent/general', () => {
   const DATA = [
@@ -350,3 +351,4 @@ describe('TableComponent/general', () => {
 });
 
 describe('TableComponent/selection', SelectionDescribe);
+describe('TableComponent/sorting', SortingSuite);
