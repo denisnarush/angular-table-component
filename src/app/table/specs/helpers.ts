@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 
 import { TableComponent } from '../table.component';
 import { GetMapValueByKeyPipe, GetValueByPathPipe } from '../table.pipes';
+import { CheckAllStatusDirective } from '../table.directives';
 
 export interface ScopeInterface {
   FIXTURE: ComponentFixture<TableComponent>;
@@ -56,7 +57,12 @@ export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
 
 export const BEFORE_EACH = async (SCOPE: ScopeInterface) => {
   await TestBed.configureTestingModule({
-    declarations: [TableComponent, GetValueByPathPipe, GetMapValueByKeyPipe],
+    declarations: [
+      TableComponent,
+      GetValueByPathPipe,
+      GetMapValueByKeyPipe,
+      CheckAllStatusDirective,
+    ],
   }).compileComponents();
 
   SCOPE.DEBUG_ELEMENTS = {};

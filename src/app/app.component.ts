@@ -31,7 +31,7 @@ export class AppComponent {
   constructor(private usersService: UserService) {
     this.defaultItems = new Map([
       [usersService.getData()[1], { selected: true, disabled: false }],
-      [usersService.getData()[3], { selected: true, disabled: false }],
+      [usersService.getData()[3], { selected: false, disabled: true }],
     ]);
   }
 

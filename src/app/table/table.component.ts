@@ -59,6 +59,8 @@ export class TableComponent implements OnInit, OnChanges {
   TableConfigColumAliases = TableConfigColumAliases;
   TableConfigSortingOrders = TableConfigSortingOrders;
 
+  checkAllStatus: boolean | unknown = false;
+
   private lastSelectedRow!: TableDataInterface;
   private lastSortedColumn!: TableColumnInterface;
 
@@ -84,6 +86,10 @@ export class TableComponent implements OnInit, OnChanges {
     if (changes['defaultItems']) {
       this.initSelectedItems();
       this.selectionChange.emit(this.selectedItems);
+    }
+
+    if (changes['data']) {
+      this.udpateCheckAll();
     }
   }
 
@@ -138,6 +144,7 @@ export class TableComponent implements OnInit, OnChanges {
 
     this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
+    this.udpateCheckAll();
   }
 
   onSelectItem(item: TableDataInterface, event: Event): void {
@@ -156,7 +163,9 @@ export class TableComponent implements OnInit, OnChanges {
       this.lastSelectedRow = item;
     }
 
+    this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
+    this.udpateCheckAll();
   }
 
   private initSelectedItems(): void {
@@ -230,5 +239,42 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     return TableConfigColumAliases.Regular;
+  }
+
+  private udpateCheckAll(): void {
+    if (this.data == null) {
+      this.checkAllStatus = false;
+      return;
+    }
+
+    let numberOfItems = this.data.length;
+    let numberOfSelected = 0;
+
+    this.data.forEach((item) => {
+      const state = this.selectedItems.get(item);
+
+      if (state) {
+        if (state.selected) {
+          numberOfSelected += 1;
+        }
+
+        if (state.disabled) {
+          numberOfItems -= 1;
+        }
+      }
+    });
+
+    switch (numberOfSelected) {
+      case 0: {
+        this.checkAllStatus = false;
+        break;
+      }
+      case numberOfItems: {
+        this.checkAllStatus = true;
+        break;
+      }
+      default:
+        this.checkAllStatus = 'some';
+    }
   }
 }

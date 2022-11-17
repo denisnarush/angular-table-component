@@ -16,7 +16,7 @@
               <div class="form-check">
                 <!-- check all -->
                 <label *ngIf="config.selection === TableSelections.Multiple" class="checkbox">
-                  <input type="checkbox" (change)="onSelectAll($event)" data-e2e="check-all">
+                  <input type="checkbox" [checkAllStatus]="checkAllStatus" (change)="onSelectAll($event)" data-e2e="check-all">
                   <span></span>
                 </label>
                 <!-- reserved elemen. it won't let the table jump -->
