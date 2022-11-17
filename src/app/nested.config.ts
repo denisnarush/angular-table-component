@@ -9,5 +9,4 @@ export const NestedConfig: TableConfigInterface = {
     },
   ],
   uniqIdKey: 'id',
-  selection: TableActions.Multiple,
 };
