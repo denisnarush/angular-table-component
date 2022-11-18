@@ -32,19 +32,21 @@ export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
     By.css('thead')
   );
   SCOPE.HTML_ELEMENTS['HEADER'] = SCOPE.DEBUG_ELEMENTS['HEADER']?.nativeElement;
-
-  // noConfigDebugElement = fixture.debugElement.query(
-  //   By.css('[data-e2e="no-config')
-  // );
-  // noConfigHTMLElement = noConfigDebugElement?.nativeElement;
-  // noDataDebugElement = fixture.debugElement.query(
-  //   By.css('[data-e2e="no-data')
-  // );
-  // noDataHTMLElement = noDataDebugElement?.nativeElement;
-  // emptyDataDebugElement = fixture.debugElement.query(
-  //   By.css('[data-e2e="empty-data')
-  // );
-  // emptyDataHTMLElement = emptyDataDebugElement?.nativeElement;
+  SCOPE.DEBUG_ELEMENTS['NO_CONFIG'] = SCOPE.FIXTURE.debugElement.query(
+    By.css('[data-e2e="no-config')
+  );
+  SCOPE.HTML_ELEMENTS['NO_CONFIG'] =
+    SCOPE.DEBUG_ELEMENTS['NO_CONFIG']?.nativeElement;
+  SCOPE.DEBUG_ELEMENTS['NO_DATA'] = SCOPE.FIXTURE.debugElement.query(
+    By.css('[data-e2e="no-data')
+  );
+  SCOPE.HTML_ELEMENTS['NO_DATA'] =
+    SCOPE.DEBUG_ELEMENTS['NO_DATA']?.nativeElement;
+  SCOPE.DEBUG_ELEMENTS['EMPTY_DATA'] = SCOPE.FIXTURE.debugElement.query(
+    By.css('[data-e2e="empty-data')
+  );
+  SCOPE.HTML_ELEMENTS['EMPTY_DATA'] =
+    SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']?.nativeElement;
   SCOPE.DEBUG_ELEMENTS['CHECK_ALL'] = SCOPE.FIXTURE.debugElement.query(
     By.css('[data-e2e="check-all"]')
   );
