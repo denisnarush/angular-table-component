@@ -186,7 +186,7 @@ export const GeneralDescribe = () => {
     expect(value).toBe('John');
   });
 
-  it(`data item value described as a path will disaply empty template if not exist`, () => {
+  it(`data item value described as a path will display empty template if not exist`, () => {
     INIT(SCOPE, () => {
       // @Input() config =
       SET_INPUT(SCOPE, 'config', {
@@ -226,38 +226,5 @@ export const GeneralDescribe = () => {
     });
 
     expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
-  });
-
-  it(`should display nesting action column in the row`, () => {
-    INIT(SCOPE, () => {
-      // @Input() config =
-      SET_INPUT(SCOPE, 'config', {
-        columns: [{ alias: 'id', label: 'ID' }],
-        uniqIdKey: 'id',
-        nesting: true,
-      });
-      // @Input() data =
-      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
-    });
-
-    expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')
-        .length
-    ).toBe(2);
-  });
-
-  it(`should not have additional colum for nesting action when nesting not provided`, () => {
-    INIT(SCOPE, () => {
-      // @Input() config =
-      SET_INPUT(SCOPE, 'config', {
-        columns: [{ alias: 'id', label: 'ID' }],
-        uniqIdKey: 'id',
-      });
-      // @Input() data =
-      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
-    });
-    expect(
-      SCOPE.HTML_ELEMENTS['ROOT'].querySelectorAll('thead tr th').length
-    ).toBe(1);
   });
 };

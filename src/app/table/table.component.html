@@ -79,7 +79,7 @@
 </ng-template>
 
 <ng-template #nesting let-item let-isOpened="isOpened">
-  <button type="button" class="button is-small is-rounded is-white" (click)="onToggleNesting(item)">
+  <button type="button" class="button is-small is-rounded is-white" data-e2e="nesting-toggle" (click)="onToggleNesting(item)">
     <ng-conatiner [ngSwitch]="isOpened">
       <ng-container *ngSwitchCase="true">▲</ng-container>
       <ng-container *ngSwitchDefault>▼</ng-container>
@@ -132,7 +132,7 @@
       </ng-container>
     </td>
   </tr>
-  <tr *ngIf="config.nesting && isOpened">
+  <tr *ngIf="config.nesting && isOpened" data-e2e="nesting-view">
     <td [attr.colspan]="columns.size"><ng-container [ngTemplateOutlet]="templates['nested']" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td>
   </tr>
 </ng-template>

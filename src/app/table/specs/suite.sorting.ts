@@ -7,7 +7,7 @@ import {
 import { BEFORE_EACH, INIT, SET_INPUT } from './helpers';
 import { THREE_ITEMS } from './mock';
 
-export const SortingSuite = () => {
+export const SortingDescribe = () => {
   let SCOPE: any = {};
 
   beforeEach(async () => {

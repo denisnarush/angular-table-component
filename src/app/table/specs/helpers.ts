@@ -55,6 +55,9 @@ export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
   SCOPE.DEBUG_ELEMENTS['ROWS'] = SCOPE.FIXTURE.debugElement.queryAll(
     By.css('[data-e2e="data-row')
   );
+  SCOPE.DEBUG_ELEMENTS['NESTING_VIEWS'] = SCOPE.FIXTURE.debugElement.queryAll(
+    By.css('[data-e2e="nesting-view"]')
+  );
 };
 
 export const BEFORE_EACH = async (SCOPE: ScopeInterface) => {

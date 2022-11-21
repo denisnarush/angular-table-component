@@ -411,7 +411,9 @@ export const SelectionDescribe = () => {
     const items = SCOPE.COMPONENT.data.length;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -453,7 +455,9 @@ export const SelectionDescribe = () => {
     const items = SCOPE.COMPONENT.data.length;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -485,7 +489,9 @@ export const SelectionDescribe = () => {
     const items = SCOPE.COMPONENT.data.length;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -527,7 +533,9 @@ export const SelectionDescribe = () => {
     const items = SCOPE.COMPONENT.data.length;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -541,11 +549,15 @@ export const SelectionDescribe = () => {
 
     selected = 0;
 
+    let unselected = 0;
+
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (!state.selected) {
+        unselected += 1;
+      }
     });
 
-    expect(selected).toBe(0);
+    expect(unselected).toBe(3);
   });
 
   it(`when none items checked by default and click on Check All twice then Check All and all items should be unchecked. Case Multiple`, () => {
@@ -588,7 +600,9 @@ export const SelectionDescribe = () => {
     expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -604,12 +618,15 @@ export const SelectionDescribe = () => {
     expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
 
     selected = 0;
+    let unselected = 0;
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (!state.selected) {
+        unselected += 1;
+      }
     });
 
-    expect(selected).toBe(0);
+    expect(unselected).toBe(3);
   });
 
   it(`when none items checked and click on Check All twice then Check All and all items should be unchecked. Case Multiple`, () => {
@@ -642,7 +659,9 @@ export const SelectionDescribe = () => {
     expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(selected).toBe(items);
@@ -659,11 +678,15 @@ export const SelectionDescribe = () => {
 
     selected = 0;
 
+    let unselected = 0;
+
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (!state.selected) {
+        unselected += 1;
+      }
     });
 
-    expect(selected).toBe(0);
+    expect(unselected).toBe(3);
   });
 
   it(`when item is disabled and click on Check All then items's state should not be changed. Case Multiple`, () => {
@@ -785,14 +808,18 @@ export const SelectionDescribe = () => {
     const seleletElement = selecDebugElement.nativeElement;
     let selected = 0;
 
+    let unselected = 0;
+
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (!state.selected) {
+        unselected += 1;
+      }
     });
     expect(
       SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))
         .length
     ).toBe(0);
-    expect(selected).toBe(0);
+    expect(unselected).toBe(3);
 
     // click on check all
     selected = 0;
@@ -803,7 +830,9 @@ export const SelectionDescribe = () => {
     SCOPE.FIXTURE.detectChanges();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(
@@ -819,7 +848,9 @@ export const SelectionDescribe = () => {
     SCOPE.FIXTURE.detectChanges();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
 
     expect(
@@ -837,7 +868,9 @@ export const SelectionDescribe = () => {
     SCOPE.FIXTURE.detectChanges();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
-      state.selected && (selected += 1);
+      if (state.selected) {
+        selected += 1;
+      }
     });
     expect(
       SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))

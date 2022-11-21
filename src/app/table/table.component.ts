@@ -201,7 +201,7 @@ export class TableComponent implements OnInit, OnChanges {
     if (this.config.sorting?.type === TableActions.Single) {
       const columnWithSorting = this.config.sorting.columns[0];
       const column = Array.from(this.columns.values()).find(
-        (column) => columnWithSorting.alias === column.alias
+        (item) => columnWithSorting.alias === item.alias
       );
 
       if (column) {
@@ -217,7 +217,7 @@ export class TableComponent implements OnInit, OnChanges {
     if (this.config.sorting?.type === TableActions.Multiple) {
       this.config.sorting.columns.forEach((columnWithSorting) => {
         const column = Array.from(this.columns.values()).find(
-          (column) => columnWithSorting.alias === column.alias
+          (item) => columnWithSorting.alias === item.alias
         );
 
         if (column) {
