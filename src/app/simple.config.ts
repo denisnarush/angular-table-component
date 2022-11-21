@@ -19,12 +19,12 @@ export const SimpleConfig: TableConfigInterface = {
     {
       label: 'Gender',
       alias: 'gender',
-      width: '0',
+      width: '7em',
     },
     {
       label: 'Balance',
       alias: 'balance',
-      width: '6em',
+      width: '7em',
     },
   ],
   uniqIdKey: 'id',

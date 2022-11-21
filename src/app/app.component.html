@@ -1,3 +1,68 @@
+<div class="notification">
+  <div class="field is-grouped">
+    <div class="control">
+      <label class="label">Selection</label>
+      <div class="select">
+        <select #selecttype (change)="onSelectTypeChange($event)">
+          <option [value]="TableActions.Multiple">{{TableActions.Multiple}}</option>
+          <option [value]="TableActions.Single">{{TableActions.Single}}</option>
+          <option [value]="null">NULL</option>
+        </select>
+      </div>
+    </div>
+    <div class="control">
+      <label class="label">Nesting</label>
+      <div class="select">
+        <select (change)="onNestingTypeChange($event)">
+          <option [value]="'ON'">ON</option>
+          <option [value]="'OFF'">OFF</option>
+        </select>
+      </div>
+    </div>
+    <div class="control">
+      <label class="label">Sorting</label>
+        <div class="dropdown" [ngClass]="{'is-active' : isSortingDropdownActive}">
+          <div class="dropdown-trigger">
+            <button type="button" class="button" aria-haspopup="true" aria-controls="dropdown-menu" (click)="onSortingDropdownToggle()">
+              <span>COLUMNS</span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a class="dropdown-item">
+                <label class="checkbox">
+                  <input type="checkbox" checked value="name" (change)="onSortingChange($event)">
+                  Name
+                </label>
+              </a>
+              <a class="dropdown-item">
+                <label class="checkbox">
+                  <input type="checkbox" checked value="email" (change)="onSortingChange($event)">
+                  Email
+                </label>
+              </a>
+              <a class="dropdown-item">
+                <label class="checkbox">
+                  <input type="checkbox" value="gender" (change)="onSortingChange($event)">
+                  Gender
+                </label>
+              </a>
+              <a class="dropdown-item">
+                <label class="checkbox">
+                  <input type="checkbox" value="balance" (change)="onSortingChange($event)">
+                  Balance
+                </label>
+              </a>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
 <div *ngIf="vm$ | async as vm" class="section">
   <div class="conatiner">
     <div class="content">
@@ -11,13 +76,20 @@
       ></app-table>
     </div>
     
-    <div class="notification" role="alert" *ngIf="selectedData">
+    <div *ngIf="selectedData && selecttype.value !== 'null'" class="notification" role="alert">
       <strong *ngIf="selectedData.length">Selected: </strong>
       <ng-container *ngFor="let item of selectedData; last as last ">
         <span class="block">{{ item['name']}}</span>
         <ng-container *ngIf="!last">, </ng-container>
       </ng-container>
       <strong *ngIf="!selectedData.length">Choose something.</strong>
+    </div>
+
+    <div *ngIf="orderValue" class="notification">
+      <ng-container *ngFor="let value of orderValue">
+        <strong>Sorted by: </strong> {{value.alias}} <strong>Order: </strong> {{value.order}}
+        <ng-container *ngIf="!value.order">NULL</ng-container>
+      </ng-container>
     </div>
   </div>
 

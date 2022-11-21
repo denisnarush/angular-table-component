@@ -65,18 +65,24 @@ export class TableComponent implements OnInit, OnChanges {
   private lastSortedColumn!: TableColumnInterface;
 
   ngOnInit(): void {
+    this.columns = new Set();
+
     if (this.config == null) {
       return;
     }
+
     if (this.config.selection) {
       this.initSelection();
     }
+
     this.config.columns.forEach((column) => {
       this.columns.add({ ...column, type: this.getColumnType(column) });
     });
+
     if (this.config.nesting) {
       this.initNesting();
     }
+
     if (this.config.sorting) {
       this.initSorting();
     }
@@ -90,6 +96,12 @@ export class TableComponent implements OnInit, OnChanges {
 
     if (changes['data']) {
       this.udpateCheckAll();
+    }
+
+    if (changes['config']?.previousValue) {
+      this.ngOnInit();
+      this.initSelectedItems();
+      this.selectionChange.emit(this.selectedItems);
     }
   }
 
@@ -169,23 +181,23 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private initSelectedItems(): void {
+    this.selectedItems = new Map();
+
     this.defaultItems.forEach((state, item) => {
       if (this.config.selection === TableActions.Single) {
         if (state.selected && this.lastSelectedRow == null) {
           this.lastSelectedRow = item;
-          this.selectedItems.set(item, {
-            selected: state.selected,
-            disabled: state.disabled,
-          });
         }
       }
 
       if (this.config.selection === TableActions.Multiple) {
-        this.selectedItems.set(item, {
-          selected: state.selected,
-          disabled: state.disabled,
-        });
+        // INFO: No action for now
       }
+
+      this.selectedItems.set(item, {
+        selected: state.selected,
+        disabled: state.disabled,
+      });
     });
   }
 
@@ -198,7 +210,13 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   private initSorting(): void {
-    if (this.config.sorting?.type === TableActions.Single) {
+    this.sortedColumns = new Map();
+
+    if (!this.config.sorting || this.config.sorting.columns.length === 0) {
+      return;
+    }
+
+    if (this.config.sorting.type === TableActions.Single) {
       const columnWithSorting = this.config.sorting.columns[0];
       const column = Array.from(this.columns.values()).find(
         (item) => columnWithSorting.alias === item.alias
@@ -214,7 +232,7 @@ export class TableComponent implements OnInit, OnChanges {
       }
     }
 
-    if (this.config.sorting?.type === TableActions.Multiple) {
+    if (this.config.sorting.type === TableActions.Multiple) {
       this.config.sorting.columns.forEach((columnWithSorting) => {
         const column = Array.from(this.columns.values()).find(
           (item) => columnWithSorting.alias === item.alias
