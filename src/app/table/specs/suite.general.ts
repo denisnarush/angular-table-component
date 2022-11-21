@@ -1,0 +1,263 @@
+import { By } from '@angular/platform-browser';
+
+import { INIT, BEFORE_EACH, SET_INPUT, REINIT_ELEMENTS } from './helpers';
+
+import { ONE_ITEM, THREE_ITEMS, TWO_ITEMS } from './mock';
+
+export const GeneralDescribe = () => {
+  let SCOPE: any = {};
+
+  beforeEach(async () => {
+    await BEFORE_EACH(SCOPE);
+  });
+
+  it('display `no config` when none input provided', () => {
+    INIT(SCOPE);
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).not.toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeUndefined();
+  });
+
+  it(`can be only config provided`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', { columns: [], uniqIdKey: 'id' });
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeUndefined();
+  });
+
+  it(`display 'no data' when config specified and data has not`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeUndefined();
+  });
+
+  it(`display 'no data' when config specified and data is null`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', null);
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeUndefined();
+  });
+
+  it(`display 'no data' when config specified and data is [<empty>]`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', []);
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeDefined();
+  });
+
+  it(`display row of statick data`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+        },
+      ]);
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeDefined();
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']).not.toBeNull();
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(1);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement).toBeDefined();
+  });
+
+  it(`display row of when async data`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', null);
+    });
+
+    SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    SCOPE.FIXTURE.detectChanges();
+
+    REINIT_ELEMENTS(SCOPE);
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_CONFIG']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_CONFIG']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['NO_DATA']).toBeNull();
+    expect(SCOPE.HTML_ELEMENTS['NO_DATA']).toBeUndefined();
+    expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']).not.toBeNull();
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(1);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement).toBeDefined();
+  });
+
+  it(`data item value can be described as a path`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [
+          { alias: 'id', label: 'ID' },
+          { alias: 'name.firstName', label: 'First name' },
+        ],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+          name: {
+            firstName: 'John',
+          },
+        },
+      ]);
+    });
+
+    const value =
+      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')[1]
+        .textContent;
+
+    expect(value).toBe('John');
+  });
+
+  it(`data item value described as a path will disaply empty template if not exist`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [
+          { alias: 'id', label: 'ID' },
+          { alias: 'name.lastName', label: 'Last name' },
+        ],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [
+        {
+          id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+          name: {
+            firstName: 'John',
+          },
+        },
+      ]);
+    });
+
+    const value =
+      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')[1]
+        .textContent;
+
+    expect(value).toBe('—');
+  });
+
+  it(`should display more than one row`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', THREE_ITEMS);
+    });
+
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
+  });
+
+  it(`should display nesting action column in the row`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+        nesting: true,
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    });
+
+    expect(
+      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')
+        .length
+    ).toBe(2);
+  });
+
+  it(`should not have additional colum for nesting action when nesting not provided`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    });
+    expect(
+      SCOPE.HTML_ELEMENTS['ROOT'].querySelectorAll('thead tr th').length
+    ).toBe(1);
+  });
+};

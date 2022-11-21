@@ -1,4 +1,4 @@
-import { TableConfigInterface, TableSelections } from './table/table.interface';
+import { TableConfigInterface, TableActions } from './table/table.interface';
 
 export const NestedConfig: TableConfigInterface = {
   caption: "User's friends",
@@ -9,5 +9,4 @@ export const NestedConfig: TableConfigInterface = {
     },
   ],
   uniqIdKey: 'id',
-  selection: TableSelections.Multiple,
 };

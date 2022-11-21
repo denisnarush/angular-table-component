@@ -13,13 +13,16 @@ import {
   ColumnNestingConfig,
   ColumnSelectingConfig,
   ColumnsTemplatesInterface,
-  OpenedNestedRowTemplatesInterface,
   SelectedItemStateInterface,
   TableColumnInterface,
   TableConfigColumAliases,
   TableConfigInterface,
   TableDataInterface,
-  TableSelections,
+  TableActions,
+  TableConfigSortingOrders,
+  TableConfigSortingColumnInterface,
+  TableConfigColumInterface,
+  TableColumnType,
 } from './table.interface';
 
 @Component({
@@ -31,40 +34,51 @@ import {
 export class TableComponent implements OnInit, OnChanges {
   @Input() config!: TableConfigInterface;
   @Input() data: TableDataInterface[] | null = null;
-
   @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
+
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
+  > = new EventEmitter();
+  @Output() sortChange: EventEmitter<
+    Map<TableColumnInterface, TableConfigSortingColumnInterface>
   > = new EventEmitter();
 
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
+
+  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> =
+    new Map();
   selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
     new Map();
+  openedRows: Map<TableDataInterface, boolean> = new Map();
 
-  TableSelections = TableSelections;
+  // Enums
+  TableSelections = TableActions;
   TableConfigColumAliases = TableConfigColumAliases;
+  TableConfigSortingOrders = TableConfigSortingOrders;
 
-  private opened: OpenedNestedRowTemplatesInterface = {};
-  private lastSelectedItem!: TableDataInterface;
+  checkAllStatus: boolean | unknown = false;
+
+  private lastSelectedRow!: TableDataInterface;
+  private lastSortedColumn!: TableColumnInterface;
 
   ngOnInit(): void {
     if (this.config == null) {
       return;
     }
-
     if (this.config.selection) {
       this.initSelection();
     }
-
     this.config.columns.forEach((column) => {
-      this.columns.add({ ...column, type: TableConfigColumAliases.Regular });
+      this.columns.add({ ...column, type: this.getColumnType(column) });
     });
-
     if (this.config.nesting) {
       this.initNesting();
+    }
+    if (this.config.sorting) {
+      this.initSorting();
     }
   }
 
@@ -74,75 +88,104 @@ export class TableComponent implements OnInit, OnChanges {
       this.selectionChange.emit(this.selectedItems);
     }
 
-    if (changes['data']?.currentValue !== null) {
-      this.initSelectedItems();
+    if (changes['data']) {
+      this.udpateCheckAll();
     }
   }
 
-  isNestedOpened(item: TableDataInterface): boolean {
-    return this.opened[item[this.config.uniqIdKey]];
+  onToggleNesting(item: TableDataInterface): void {
+    this.openedRows.set(item, !this.openedRows.get(item));
+    this.openedRows = new Map(this.openedRows);
   }
 
-  onToggleNested(item: TableDataInterface): void {
-    this.opened[item[this.config.uniqIdKey]] =
-      !this.opened[item[this.config.uniqIdKey]];
+  onToggleSorting(column: TableColumnInterface): void {
+    if (this.config.sorting?.type === TableActions.Single) {
+      if (column.alias !== this.lastSortedColumn?.alias) {
+        this.sortedColumns.delete(this.lastSortedColumn);
+        this.lastSortedColumn = column;
+      }
+    }
+
+    switch (this.sortedColumns.get(column)?.order) {
+      case TableConfigSortingOrders.Desc: {
+        this.sortedColumns.set(column, { alias: column.alias, order: null });
+        break;
+      }
+      case TableConfigSortingOrders.Asc: {
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: TableConfigSortingOrders.Desc,
+        });
+        break;
+      }
+      default: {
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: TableConfigSortingOrders.Asc,
+        });
+      }
+    }
+
+    this.sortedColumns = new Map(this.sortedColumns);
+    this.sortChange.emit(this.sortedColumns);
   }
 
   onSelectAll(event: Event): void {
-    for (const [item, state] of this.selectedItems.entries()) {
-      this.selectedItems.set(item, {
-        selected: state.disabled
-          ? state.selected
-          : (event.target as HTMLInputElement).checked,
-        disabled: state.disabled,
+    this.data?.forEach((value) => {
+      const item = this.selectedItems.get(value);
+      this.selectedItems.set(value, {
+        selected:
+          item && item.disabled
+            ? item.selected
+            : (event.target as HTMLInputElement).checked,
+        disabled: item ? item.disabled : false,
       });
-    }
+    });
 
+    this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
+    this.udpateCheckAll();
   }
 
   onSelectItem(item: TableDataInterface, event: Event): void {
-    if (this.config.selection === TableSelections.Multiple) {
+    if (this.config.selection === TableActions.Multiple) {
       this.selectedItems.set(item, {
         selected: (event.target as HTMLInputElement).checked,
         disabled: false,
       });
     }
 
-    if (this.config.selection === TableSelections.Single) {
-      if (this.lastSelectedItem != null) {
-        const state = this.selectedItems.get(this.lastSelectedItem);
-        this.selectedItems.set(this.lastSelectedItem, {
-          selected: false,
-          disabled: state ? state.disabled : false,
-        });
+    if (this.config.selection === TableActions.Single) {
+      if (this.lastSelectedRow != null) {
+        this.selectedItems.delete(this.lastSelectedRow);
       }
       this.selectedItems.set(item, { selected: true, disabled: false });
-      this.lastSelectedItem = item;
+      this.lastSelectedRow = item;
     }
 
+    this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
-  }
-
-  getValue(object: TableDataInterface, keys: string | string[]): string | null {
-    keys = Array.isArray(keys) ? keys : keys.split('.');
-    object = object[keys[0]];
-    if (object && keys.length > 1) {
-      return this.getValue(object, keys.slice(1));
-    }
-    return object == null ? null : `${object}`;
+    this.udpateCheckAll();
   }
 
   private initSelectedItems(): void {
-    this.data?.forEach((item) => {
-      const defaultItem = this.defaultItems.get(item);
-      this.selectedItems.set(item, {
-        selected: defaultItem ? defaultItem.selected : false,
-        disabled: defaultItem ? defaultItem.disabled : false,
-      });
-      this.lastSelectedItem = defaultItem?.selected
-        ? item
-        : this.lastSelectedItem;
+    this.defaultItems.forEach((state, item) => {
+      if (this.config.selection === TableActions.Single) {
+        if (state.selected && this.lastSelectedRow == null) {
+          this.lastSelectedRow = item;
+          this.selectedItems.set(item, {
+            selected: state.selected,
+            disabled: state.disabled,
+          });
+        }
+      }
+
+      if (this.config.selection === TableActions.Multiple) {
+        this.selectedItems.set(item, {
+          selected: state.selected,
+          disabled: state.disabled,
+        });
+      }
     });
   }
 
@@ -152,5 +195,86 @@ export class TableComponent implements OnInit, OnChanges {
 
   private initSelection(): void {
     this.columns.add(ColumnSelectingConfig);
+  }
+
+  private initSorting(): void {
+    if (this.config.sorting?.type === TableActions.Single) {
+      const columnWithSorting = this.config.sorting.columns[0];
+      const column = Array.from(this.columns.values()).find(
+        (column) => columnWithSorting.alias === column.alias
+      );
+
+      if (column) {
+        this.sortedColumns.set(column, {
+          alias: column.alias,
+          order: columnWithSorting.order,
+        });
+
+        this.lastSortedColumn = column;
+      }
+    }
+
+    if (this.config.sorting?.type === TableActions.Multiple) {
+      this.config.sorting.columns.forEach((columnWithSorting) => {
+        const column = Array.from(this.columns.values()).find(
+          (column) => columnWithSorting.alias === column.alias
+        );
+
+        if (column) {
+          this.sortedColumns.set(column, {
+            alias: column.alias,
+            order: columnWithSorting.order,
+          });
+        }
+      });
+    }
+  }
+
+  private getColumnType(column: TableConfigColumInterface): TableColumnType {
+    if (
+      this.config.sorting !== null &&
+      this.config.sorting?.columns.find((index) => index.alias === column.alias)
+    ) {
+      return TableConfigColumAliases.Sorting;
+    }
+
+    return TableConfigColumAliases.Regular;
+  }
+
+  private udpateCheckAll(): void {
+    if (this.data == null) {
+      this.checkAllStatus = false;
+      return;
+    }
+
+    let numberOfItems = this.data.length;
+    let numberOfSelected = 0;
+
+    this.data.forEach((item) => {
+      const state = this.selectedItems.get(item);
+
+      if (state) {
+        if (state.selected) {
+          numberOfSelected += 1;
+        }
+
+        if (state.disabled) {
+          numberOfItems -= 1;
+        }
+      }
+    });
+
+    switch (numberOfSelected) {
+      case 0: {
+        this.checkAllStatus = false;
+        break;
+      }
+      case numberOfItems: {
+        this.checkAllStatus = true;
+        break;
+      }
+      default:
+        this.checkAllStatus = 'some';
+    }
   }
 }

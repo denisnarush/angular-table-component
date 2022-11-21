@@ -1,4 +1,8 @@
-import { TableConfigInterface, TableSelections } from './table/table.interface';
+import {
+  TableConfigInterface,
+  TableActions,
+  TableConfigSortingOrders,
+} from './table/table.interface';
 
 export const SimpleConfig: TableConfigInterface = {
   caption: 'Users',
@@ -20,9 +24,23 @@ export const SimpleConfig: TableConfigInterface = {
     {
       label: 'Balance',
       alias: 'balance',
-      width: '0',
+      width: '6em',
     },
   ],
   uniqIdKey: 'id',
-  selection: TableSelections.Multiple,
+  selection: TableActions.Multiple,
+  nesting: true,
+  sorting: {
+    type: TableActions.Single,
+    columns: [
+      {
+        alias: 'name',
+        order: TableConfigSortingOrders.Asc,
+      },
+      {
+        alias: 'email',
+        order: TableConfigSortingOrders.Asc,
+      },
+    ],
+  },
 };

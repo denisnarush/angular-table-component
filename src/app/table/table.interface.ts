@@ -1,7 +1,15 @@
 import { TemplateRef } from '@angular/core';
 
-type TableSelectionType = 'SINGLE' | 'MULTIPLE';
-export enum TableSelections {
+export type TableConfigUniqIdKeyType = string;
+
+export type TableConfigSortingOrderType = 'ASC' | 'DESC' | null;
+export enum TableConfigSortingOrders {
+  Asc = 'ASC',
+  Desc = 'DESC',
+}
+
+type TableActionType = 'SINGLE' | 'MULTIPLE';
+export enum TableActions {
   Single = 'SINGLE',
   Multiple = 'MULTIPLE',
 }
@@ -15,14 +23,16 @@ export enum TableConfigColumAliases {
   Regular = 'REGULAR',
   Nesting = 'NESTING',
   Selecting = 'SELECTING',
+  Sorting = 'SORTING',
 }
 
 export interface TableConfigInterface {
   caption?: string;
   columns: TableConfigColumInterface[];
-  uniqIdKey: string;
-  selection?: TableSelectionType;
+  uniqIdKey: TableConfigUniqIdKeyType;
+  selection?: TableActionType;
   nesting?: boolean;
+  sorting?: TableConfigSortingInterface;
 }
 
 export interface TableDataInterface {
@@ -35,11 +45,24 @@ export interface TableConfigColumInterface {
   width?: string;
 }
 
+export interface TableConfigSortingColumnInterface {
+  alias: string;
+  order: TableConfigSortingOrderType;
+}
+
+export interface TableConfigSortingInterface {
+  type: TableActionType;
+  columns: TableConfigSortingColumnInterface[];
+}
+
+export type TableColumnType =
+  | TableConfigColumAliases.Regular
+  | TableConfigColumAliases.Nesting
+  | TableConfigColumAliases.Selecting
+  | TableConfigColumAliases.Sorting;
+
 export interface TableColumnInterface extends TableConfigColumInterface {
-  type:
-    | TableConfigColumAliases.Regular
-    | TableConfigColumAliases.Nesting
-    | TableConfigColumAliases.Selecting;
+  type: TableColumnType;
 }
 
 export interface ColumnsTemplatesInterface {

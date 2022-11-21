@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { combineLatest, map, startWith } from 'rxjs';
 import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
 import {
   SelectedItemStateInterface,
+  TableColumnInterface,
+  TableConfigSortingColumnInterface,
   TableDataInterface,
 } from './table/table.interface';
 import { UserService } from './user.service';
@@ -13,11 +15,12 @@ import { UserService } from './user.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   simpleConfig = SimpleConfig;
   NestedConfig = NestedConfig;
 
-  selectedData!: Map<TableDataInterface, SelectedItemStateInterface>;
+  selectedData!: TableDataInterface[];
+  orderValue!: TableConfigSortingColumnInterface[];
   defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
 
   vm$ = combineLatest([this.usersService.getUsers()]).pipe(
@@ -25,13 +28,28 @@ export class AppComponent implements OnInit {
     map(([users]) => ({ users }))
   );
 
-  constructor(private usersService: UserService) {}
-
-  ngOnInit(): void {}
+  constructor(private usersService: UserService) {
+    this.defaultItems = new Map([
+      [usersService.getData()[1], { selected: true, disabled: false }],
+      [usersService.getData()[3], { selected: false, disabled: true }],
+    ]);
+  }
 
   onSimpleSelectionChange(
     data: Map<TableDataInterface, SelectedItemStateInterface>
   ): void {
-    this.selectedData = data;
+    const newArra: TableDataInterface[] = [];
+    data.forEach((state, item) => {
+      if (state.selected) {
+        newArra.push(item);
+      }
+    });
+    this.selectedData = newArra;
+  }
+
+  onSimpleSortChange(
+    data: Map<TableColumnInterface, TableConfigSortingColumnInterface>
+  ): void {
+    this.orderValue = Array.from(data.values());
   }
 }
