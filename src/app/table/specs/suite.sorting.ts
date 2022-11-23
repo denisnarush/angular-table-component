@@ -5,7 +5,7 @@ import {
   TableConfigSortingOrders,
 } from '../table.interface';
 import { BEFORE_EACH, INIT, SET_INPUT } from './helpers';
-import { THREE_ITEMS } from './mock';
+import { THREE_ITEMS } from './mock.data';
 
 export const SortingDescribe = () => {
   let SCOPE: any = {};
@@ -175,6 +175,22 @@ export const SortingDescribe = () => {
     expect(debugIndicatorElement.nativeElement.getAttribute('data-e2e')).toBe(
       'direction desc'
     );
+  });
+
+  it(`config.sorting.columns is empty array sorted columns size should be 0`, () => {
+    INIT(SCOPE, () => {
+      SET_INPUT(SCOPE, 'config', {
+        columns: [
+          { alias: 'id', label: 'ID' },
+          { alias: '-', label: '-' },
+        ],
+        sorting: {
+          type: TableActions.Single,
+          columns: [],
+        },
+      });
+    });
+    expect(SCOPE.COMPONENT.sortedColumns.size).toBe(0);
   });
 
   it(`last sorted column should be first sorted column in config. case Single, order ASC`, () => {

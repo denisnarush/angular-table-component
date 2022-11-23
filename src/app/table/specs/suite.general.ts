@@ -1,8 +1,14 @@
 import { By } from '@angular/platform-browser';
 
-import { INIT, BEFORE_EACH, SET_INPUT, REINIT_ELEMENTS } from './helpers';
+import {
+  INIT,
+  BEFORE_EACH,
+  SET_INPUT,
+  REINIT_ELEMENTS,
+  CREATE_EMAIL_TEMPLATE,
+} from './helpers';
 
-import { ONE_ITEM, THREE_ITEMS, TWO_ITEMS } from './mock';
+import { ONE_ITEM, THREE_ITEMS } from './mock.data';
 
 export const GeneralDescribe = () => {
   let SCOPE: any = {};
@@ -226,5 +232,55 @@ export const GeneralDescribe = () => {
     });
 
     expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
+  });
+
+  it(`cell can be defined with template`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'email', label: 'Email' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    });
+
+    CREATE_EMAIL_TEMPLATE(SCOPE);
+    SCOPE.FIXTURES.email.detectChanges();
+
+    SET_INPUT(SCOPE, 'templates', { email: SCOPE.COMPONENTS.email.template });
+    SCOPE.FIXTURE.detectChanges();
+
+    const emailCellElement = SCOPE.DEBUG_ELEMENTS['ROWS'][0].query(
+      By.css('td')
+    ).nativeElement;
+
+    expect(emailCellElement.children[0].outerHTML).toBe(
+      `<a href="mailto:${ONE_ITEM.email}">${ONE_ITEM.email}</a>`
+    );
+  });
+
+  it(`config can be changed later if it was initially defined`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', null);
+    });
+
+    SET_INPUT(SCOPE, 'config', {
+      columns: [
+        { alias: 'id', label: 'ID' },
+        { alias: 'email', label: 'Email' },
+      ],
+      uniqIdKey: 'id',
+    });
+
+    SCOPE.FIXTURE.detectChanges();
+
+    expect(SCOPE.COMPONENT.columns.size).toBe(2);
   });
 };

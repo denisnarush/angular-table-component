@@ -1,9 +1,8 @@
 import { By } from '@angular/platform-browser';
-import { TableActions } from '../table.interface';
 
 import { INIT, BEFORE_EACH, SET_INPUT, REINIT_ELEMENTS } from './helpers';
 
-import { ONE_ITEM, THREE_ITEMS, TWO_ITEMS } from './mock';
+import { ONE_ITEM } from './mock.data';
 
 export const NestingDescribe = () => {
   let SCOPE: any = {};

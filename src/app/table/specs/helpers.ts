@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 import { TableComponent } from '../table.component';
 import { GetMapValueByKeyPipe, GetValueByPathPipe } from '../table.pipes';
 import { CheckAllStatusDirective } from '../table.directives';
+import { MockEmailColumnTemplateComponent } from './mock.templates.components';
 
 export interface ScopeInterface {
   FIXTURE: ComponentFixture<TableComponent>;
@@ -16,11 +17,24 @@ export interface ScopeInterface {
   HTML_ELEMENTS: {
     [K: string]: HTMLElement;
   };
+  FIXTURES: {
+    email?: ComponentFixture<MockEmailColumnTemplateComponent>;
+  };
+  COMPONENTS: {
+    email?: MockEmailColumnTemplateComponent;
+  };
 }
 
 export const RECREATE = (SCOPE: ScopeInterface) => {
   SCOPE.FIXTURE = TestBed.createComponent(TableComponent);
   SCOPE.COMPONENT = SCOPE.FIXTURE.componentInstance;
+};
+
+export const CREATE_EMAIL_TEMPLATE = (SCOPE: ScopeInterface) => {
+  SCOPE.FIXTURES.email = TestBed.createComponent(
+    MockEmailColumnTemplateComponent
+  );
+  SCOPE.COMPONENTS.email = SCOPE.FIXTURES.email.componentInstance;
 };
 
 export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
@@ -67,11 +81,14 @@ export const BEFORE_EACH = async (SCOPE: ScopeInterface) => {
       GetValueByPathPipe,
       GetMapValueByKeyPipe,
       CheckAllStatusDirective,
+      MockEmailColumnTemplateComponent,
     ],
   }).compileComponents();
 
   SCOPE.DEBUG_ELEMENTS = {};
   SCOPE.HTML_ELEMENTS = {};
+  SCOPE.FIXTURES = {};
+  SCOPE.COMPONENTS = {};
 
   RECREATE(SCOPE);
   SCOPE.FIXTURE.detectChanges();

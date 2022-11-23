@@ -1,12 +1,15 @@
 export const DATA = [
   {
     id: '31558be5-78f6-40d6-8c35-c94ebf36da99',
+    email: 'michelleleonard@dognost.com',
   },
   {
     id: '464e619d-b3ea-4a13-826c-21474beda672',
+    email: 'tylermcdaniel@otherway.com',
   },
   {
     id: '2deaafd8-4c0c-4b98-aa70-2d25c35ddf5f',
+    email: 'eugeniarasmussen@assistia.com',
   },
 ];
 
