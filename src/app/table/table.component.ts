@@ -26,7 +26,7 @@ import {
 } from './table.interface';
 
 @Component({
-  selector: 'app-table',
+  selector: 'marketplace-table',
   templateUrl: './table.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,8 +34,7 @@ import {
 export class TableComponent implements OnInit, OnChanges {
   @Input() config!: TableConfigInterface;
   @Input() data: TableDataInterface[] | null = null;
-  @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
-    new Map();
+  @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
 
   @Output() selectionChange: EventEmitter<
@@ -48,10 +47,8 @@ export class TableComponent implements OnInit, OnChanges {
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
 
-  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> =
-    new Map();
-  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
-    new Map();
+  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> = new Map();
+  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
   openedRows: Map<TableDataInterface, boolean> = new Map();
 
   // Enums
@@ -75,13 +72,13 @@ export class TableComponent implements OnInit, OnChanges {
       this.initSelection();
     }
 
-    this.config.columns.forEach((column) => {
-      this.columns.add({ ...column, type: this.getColumnType(column) });
-    });
-
     if (this.config.nesting) {
       this.initNesting();
     }
+
+    this.config.columns.forEach(column => {
+      this.columns.add({ ...column, type: this.getColumnType(column) });
+    });
 
     if (this.config.sorting) {
       this.initSorting();
@@ -143,13 +140,11 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   onSelectAll(event: Event): void {
-    this.data?.forEach((value) => {
+    this.data?.forEach(value => {
       const item = this.selectedItems.get(value);
       this.selectedItems.set(value, {
         selected:
-          item && item.disabled
-            ? item.selected
-            : (event.target as HTMLInputElement).checked,
+          item && item.disabled ? item.selected : (event.target as HTMLInputElement).checked,
         disabled: item ? item.disabled : false,
       });
     });
@@ -219,7 +214,7 @@ export class TableComponent implements OnInit, OnChanges {
     if (this.config.sorting.type === TableActions.Single) {
       const columnWithSorting = this.config.sorting.columns[0];
       const column = Array.from(this.columns.values()).find(
-        (item) => columnWithSorting.alias === item.alias
+        item => columnWithSorting.alias === item.alias,
       );
 
       if (column) {
@@ -233,9 +228,9 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (this.config.sorting.type === TableActions.Multiple) {
-      this.config.sorting.columns.forEach((columnWithSorting) => {
+      this.config.sorting.columns.forEach(columnWithSorting => {
         const column = Array.from(this.columns.values()).find(
-          (item) => columnWithSorting.alias === item.alias
+          item => columnWithSorting.alias === item.alias,
         );
 
         if (column) {
@@ -251,7 +246,7 @@ export class TableComponent implements OnInit, OnChanges {
   private getColumnType(column: TableConfigColumInterface): TableColumnType {
     if (
       this.config.sorting !== null &&
-      this.config.sorting?.columns.find((index) => index.alias === column.alias)
+      this.config.sorting?.columns.find(index => index.alias === column.alias)
     ) {
       return TableConfigColumAliases.Sorting;
     }
@@ -268,7 +263,7 @@ export class TableComponent implements OnInit, OnChanges {
     let numberOfItems = this.data.length;
     let numberOfSelected = 0;
 
-    this.data.forEach((item) => {
+    this.data.forEach(item => {
       const state = this.selectedItems.get(item);
 
       if (state) {

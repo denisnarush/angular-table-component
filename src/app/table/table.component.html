@@ -79,12 +79,12 @@
 </ng-template>
 
 <ng-template #nesting let-item let-isOpened="isOpened">
-  <button type="button" class="button is-small is-rounded is-white" data-e2e="nesting-toggle" (click)="onToggleNesting(item)">
+  <span class="p-3" data-e2e="nesting-toggle" (click)="onToggleNesting(item)">
     <ng-conatiner [ngSwitch]="isOpened">
-      <ng-container *ngSwitchCase="true">▲</ng-container>
-      <ng-container *ngSwitchDefault>▼</ng-container>
+      <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="up"></ng-container>
+      <ng-container *ngSwitchDefault [ngTemplateOutlet]="down"></ng-container>
     </ng-conatiner>
-  </button>
+  </span>
 </ng-template>
 
 <ng-template #sorting let-column>
@@ -92,8 +92,8 @@
     {{column.label}}
     <ng-container *ngIf="sortedColumns | getMapValueByKey : column as value">
       <ng-container [ngSwitch]="value.order">
-        <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc"><span data-e2e="direction desc">▲</span></ng-container>
-        <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc"><span data-e2e="direction asc">▼</span></ng-container>
+        <ng-container *ngSwitchCase="TableConfigSortingOrders.Desc"><span data-e2e="direction desc"><ng-container [ngTemplateOutlet]="up"></ng-container></span></ng-container>
+        <ng-container *ngSwitchCase="TableConfigSortingOrders.Asc"><span data-e2e="direction asc"><ng-container [ngTemplateOutlet]="down"></ng-container></span></ng-container>
         <ng-container *ngSwitchDefault></ng-container>
       </ng-container>
     </ng-container>
@@ -135,4 +135,11 @@
   <tr *ngIf="config.nesting && isOpened" data-e2e="nesting-view">
     <td [attr.colspan]="columns.size"><ng-container [ngTemplateOutlet]="templates['nested']" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container></td>
   </tr>
+</ng-template>
+
+<ng-template #up>
+  <svg aria-hidden="true" style="height: 1em" viewBox="0 0 320 512"><path fill="currentColor" d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"></path></svg>
+</ng-template>
+<ng-template #down>
+  <svg aria-hidden="true" style="height: 1em" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"></path></svg>
 </ng-template>

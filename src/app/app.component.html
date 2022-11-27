@@ -66,14 +66,14 @@
 <div *ngIf="vm$ | async as vm" class="section">
   <div class="conatiner">
     <div class="content">
-      <app-table #main
+      <marketplace-table #main
         [config]="simpleConfig"
         [data]="vm.users"
         [templates]="{ email, balance, nested }"
         [defaultItems]="defaultItems"
         (selectionChange)="onSimpleSelectionChange($event)"
         (sortChange)="onSimpleSortChange($event)"
-      ></app-table>
+      ></marketplace-table>
     </div>
     
     <div *ngIf="selectedData && selecttype.value !== 'null'" class="notification" role="alert">
@@ -102,6 +102,6 @@
   </ng-template>
 
   <ng-template #nested let-item>
-    <app-table [config]="NestedConfig"></app-table>
+    <marketplace-table [config]="NestedConfig"></marketplace-table>
   </ng-template>
 </div>

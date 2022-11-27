@@ -5,13 +5,8 @@ import { GetMapValueByKeyPipe, GetValueByPathPipe } from './table.pipes';
 import { CheckAllStatusDirective } from './table.directives';
 
 @NgModule({
-  declarations: [
-    TableComponent,
-    GetValueByPathPipe,
-    GetMapValueByKeyPipe,
-    CheckAllStatusDirective,
-  ],
+  declarations: [TableComponent, GetValueByPathPipe, GetMapValueByKeyPipe, CheckAllStatusDirective],
   imports: [CommonModule],
   exports: [TableComponent],
 })
-export class TableModule {}
+export class MarketplaceTableModule {}
