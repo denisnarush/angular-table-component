@@ -7,7 +7,6 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewEncapsulation,
 } from '@angular/core';
 import {
   ColumnNestingConfig,
@@ -28,7 +27,7 @@ import {
 @Component({
   selector: 'marketplace-table',
   templateUrl: './table.component.html',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TableComponent implements OnInit, OnChanges {

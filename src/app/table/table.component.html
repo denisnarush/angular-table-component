@@ -26,7 +26,7 @@
             <!-- nesting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Nesting">
               <!-- expand/collapse all -->
-              <button type="button" class="button is-small is-rounded is-white is-invisible"><ng-container>▼</ng-container></button>
+              <span class="p-3 is-invisible"><ng-container [ngTemplateOutlet]="down"></ng-container></span>
             </ng-container>
             <!-- sorting -->
             <ng-container *ngSwitchCase="TableConfigColumAliases.Sorting" [ngTemplateOutlet]="sorting" [ngTemplateOutletContext]="{ $implicit: column}"></ng-container>
@@ -53,13 +53,13 @@
 <ng-template #nodata>
   <tr><td [colSpan]="columns.size"><div class="card" data-e2e="no-data">
     <div class="card-content">There are no items or they are loading.</div></div>
-    <p>&nbsp;</p></td></tr>
+  </td></tr>
 </ng-template>
 
 <ng-template #emptydata>
   <tr><td [colSpan]="columns.size"><div class="card" data-e2e="empty-data">
     <div class="card-content">There are no items.</div></div>
-    <p>&nbsp;</p></td></tr>
+  </td></tr>
 </ng-template>
 
 <ng-template #noconfig><div class="card" data-e2e="no-config"><div class="card-content">No configuration</div></div></ng-template>
