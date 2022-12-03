@@ -1,3 +1,5 @@
+/* ▲▼△▽⇅↑↓ */
+import isEqual from 'lodash-es/isEqual';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,6 +37,8 @@ export class TableComponent implements OnInit, OnChanges {
   @Input() data: TableDataInterface[] | null = null;
   @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
+  @Input() disabled = false;
+  @Input() loading = false;
 
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
@@ -90,6 +94,18 @@ export class TableComponent implements OnInit, OnChanges {
       this.selectionChange.emit(this.selectedItems);
     }
 
+    if (changes['data']?.currentValue) {
+      const data: TableDataInterface[] = changes['data'].currentValue;
+      this.data = data.map((item) => {
+        for (const key of this.selectedItems.keys()) {
+          if (isEqual(item, key)) {
+            return (item = key);
+          }
+        }
+        return item;
+      });
+    }
+
     if (changes['data']) {
       this.udpateCheckAll();
     }
@@ -140,11 +156,13 @@ export class TableComponent implements OnInit, OnChanges {
 
   onSelectAll(event: Event): void {
     this.data?.forEach(value => {
-      const item = this.selectedItems.get(value);
+      const state = this.selectedItems.get(value);
       this.selectedItems.set(value, {
         selected:
-          item && item.disabled ? item.selected : (event.target as HTMLInputElement).checked,
-        disabled: item ? item.disabled : false,
+          state && state.disabled
+            ? state.selected
+            : (event.target as HTMLInputElement).checked,
+        disabled: state ? state.disabled : false,
       });
     });
 
@@ -174,9 +192,12 @@ export class TableComponent implements OnInit, OnChanges {
     this.udpateCheckAll();
   }
 
-  private initSelectedItems(): void {
+  reset(): void {
     this.selectedItems = new Map();
+    this.openedRows = new Map();
+  }
 
+  private initSelectedItems(): void {
     this.defaultItems.forEach((state, item) => {
       if (this.config.selection === TableActions.Single) {
         if (state.selected && this.lastSelectedRow == null) {

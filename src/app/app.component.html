@@ -1,5 +1,7 @@
+<!-- top panel -->
 <div class="notification">
   <div class="field is-grouped">
+    <!-- selection -->
     <div class="control">
       <label class="label">Selection</label>
       <div class="select">
@@ -10,6 +12,7 @@
         </select>
       </div>
     </div>
+    <!-- nesting -->
     <div class="control">
       <label class="label">Nesting</label>
       <div class="select">
@@ -19,6 +22,7 @@
         </select>
       </div>
     </div>
+    <!-- sorting -->
     <div class="control">
       <label class="label">Sorting</label>
         <div class="dropdown" [ngClass]="{'is-active' : isSortingDropdownActive}">
@@ -60,48 +64,100 @@
           </div>
         </div>
     </div>
+    <!-- loading -->
+    <div class="control">
+      <label class="label">Is loading</label>
+      <label class="checkbox">
+        <input type="checkbox" (change)="onIsLoading($event)">
+        <span></span>
+      </label>
+    </div>
+    <!-- disabled -->
+    <div class="control">
+      <label class="label">Is Disabled</label>
+      <label class="checkbox">
+        <input type="checkbox" (change)="onIsDisabled($event)">
+        <span></span>
+      </label>
+    </div>
   </div>
 </div>
-
+<!-- main -->
 <div *ngIf="vm$ | async as vm" class="section">
   <div class="conatiner">
-    <div class="content">
-      <marketplace-table #main
+      <marketplace-table
         [config]="simpleConfig"
         [data]="vm.users"
-        [templates]="{ email, balance, nested }"
+        [loading]="vm.isLoading"
+        [disabled]="vm.isDisabled"
+        [templates]="{ email, balance, nested, gender }"
         [defaultItems]="defaultItems"
         (selectionChange)="onSimpleSelectionChange($event)"
         (sortChange)="onSimpleSortChange($event)"
       ></marketplace-table>
+      <p>&nbsp;</p>
+      <div class="field has-addons has-addons-right">
+        <div class="control">
+          <button
+            type="button"
+            class="button"
+            [disabled]="vm.currentPage === 1 || vm.isLoading"
+            (click)="onPage(vm.currentPage - 1)"
+          >◀</button>
+        </div>
+        <div class="control">
+          <input
+            type="number"
+            class="input has-text-right" 
+            style="width: 4em" readonly [value]="vm.currentPage">
+        </div>
+        <div class="control">
+          <button
+            type="button"
+            class="button"
+            (click)="onPage(vm.currentPage + 1)"
+            [disabled]="vm.currentPage === 3 || vm.isLoading"
+          >▶</button>
+        </div>
+      </div>
+      <p>&nbsp;</p>
     </div>
-    
-    <div *ngIf="selectedData && selecttype.value !== 'null'" class="notification" role="alert">
-      <strong *ngIf="selectedData.length">Selected: </strong>
-      <ng-container *ngFor="let item of selectedData; last as last ">
-        <span class="block">{{ item['name']}}</span>
-        <ng-container *ngIf="!last">, </ng-container>
-      </ng-container>
-      <strong *ngIf="!selectedData.length">Choose something.</strong>
+
+    <div class="debug">
+      <div *ngIf="selectedData && selecttype.value !== 'null'" class="notification" role="alert">
+        <strong *ngIf="selectedData.length">Selected: </strong>
+        <ng-container *ngFor="let item of selectedData; last as last ">
+          <span class="block">{{ item['name']}}</span>
+          <ng-container *ngIf="!last">, </ng-container>
+        </ng-container>
+        <strong *ngIf="!selectedData.length">Choose something.</strong>
+      </div>
+      <p>&nbsp;</p>
+      <div *ngIf="orderValue" class="notification">
+        <ng-container *ngFor="let value of orderValue">
+          <strong>Sorted by: </strong> {{value.alias}} <strong>Order: </strong> {{value.order}}
+          <ng-container *ngIf="!value.order">NULL</ng-container>
+        </ng-container>
+      </div>
     </div>
-
-    <div *ngIf="orderValue" class="notification">
-      <ng-container *ngFor="let value of orderValue">
-        <strong>Sorted by: </strong> {{value.alias}} <strong>Order: </strong> {{value.order}}
-        <ng-container *ngIf="!value.order">NULL</ng-container>
-      </ng-container>
-    </div>
-  </div>
-
-  <ng-template #email let-empty="empty" let-data>
-    <a *ngIf="data.email; else empty" [href]="'mailto:' + data.email">{{ data.email }}</a>
-  </ng-template>
-
-  <ng-template #balance let-empty="empty" let-data>
-    <div class="has-text-right">{{data.balance}}</div>
-  </ng-template>
-
-  <ng-template #nested let-item>
-    <marketplace-table [config]="NestedConfig"></marketplace-table>
-  </ng-template>
 </div>
+
+<!-- templates -->
+<ng-template #email let-empty="empty" let-data>
+  <a *ngIf="data.email; else empty" [href]="'mailto:' + data.email">{{ data.email }}</a>
+</ng-template>
+
+<ng-template #balance let-empty="empty" let-data>
+  <div class="has-text-right">{{data.balance}}</div>
+</ng-template>
+
+<ng-template #gender let-empty="empty" let-data>
+  <ng-container *ngIf="data.gender == null; then empty"></ng-container>
+  <ng-container *ngIf="data.gender === 'male'">&#9794;</ng-container>
+  <ng-container *ngIf="data.gender === 'female'">&#9792;</ng-container>
+  
+</ng-template>
+
+<ng-template #nested>
+  <marketplace-table [config]="NestedConfig"></marketplace-table>
+</ng-template>

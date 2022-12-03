@@ -2,7 +2,10 @@
 <ng-container *ngIf="!config then noconfig  else container"></ng-container>
 <ng-template #container>
 <div class="table-container">
-  <table class="table is-hoverable is-focusable is-fullwidth is-relative">
+  <table 
+    class="table is-hoverable is-focusable is-fullwidth is-relative"
+    [ngClass]="{'is-disabled': disabled, 'is-loading': loading}"
+  >
     <thead>
       <tr>
         <th
@@ -51,13 +54,13 @@
 </ng-template>
 
 <ng-template #nodata>
-  <tr><td [colSpan]="columns.size"><div class="card" data-e2e="no-data">
+  <tr><td [colSpan]="columns.size"><div *ngIf="!loading" class="card" data-e2e="no-data">
     <div class="card-content">There are no items or they are loading.</div></div>
   </td></tr>
 </ng-template>
 
 <ng-template #emptydata>
-  <tr><td [colSpan]="columns.size"><div class="card" data-e2e="empty-data">
+  <tr><td [colSpan]="columns.size"><div *ngIf="!loading" class="card" data-e2e="empty-data">
     <div class="card-content">There are no items.</div></div>
   </td></tr>
 </ng-template>
@@ -103,7 +106,7 @@
 <ng-template #row let-item let-isOpened="isOpened">
   <tr data-e2e="data-row">
     <td *ngFor="let column of columns">
-      <ng-container [ngSwitch]="column.type">
+      <ng-container [ngSwitch]="column.type" *ngIf="!loading; else isloading" >
         <!-- select SINGLE -->
         <ng-container
           *ngSwitchCase="TableConfigColumAliases.Selecting"
@@ -143,3 +146,4 @@
 <ng-template #down>
   <svg aria-hidden="true" style="height: 1em" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"></path></svg>
 </ng-template>
+<ng-template #isloading>&nbsp;</ng-template>

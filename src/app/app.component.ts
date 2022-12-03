@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
-import { combineLatest, map, startWith } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  finalize,
+  map,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { NestedConfig } from './nested.config';
 import { SimpleConfig } from './simple.config';
 import {
@@ -27,20 +34,54 @@ export class AppComponent {
   orderValue: TableConfigSortingColumnInterface[] = [
     { alias: 'name', order: TableConfigSortingOrders.Asc },
   ];
+
   defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
-
-  vm$ = combineLatest([this.usersService.getUsers()]).pipe(
-    startWith([null]),
-    map(([users]) => ({ users }))
-  );
-
   isSortingDropdownActive = false;
+
+  currentPage$ = new BehaviorSubject(1);
+  isLoading$ = new BehaviorSubject(false);
+  isDisabled$ = new BehaviorSubject(false);
+
+  vm$ = combineLatest([
+    this.currentPage$,
+    this.isLoading$,
+    this.isDisabled$,
+    this.currentPage$
+      .pipe(
+        switchMap((page) => {
+          this.isLoading$.next(true);
+          return this.usersService.getUsers({ page }).pipe(
+            finalize(() => {
+              this.isLoading$.next(false);
+            })
+          );
+        })
+      )
+      .pipe(startWith(null)),
+  ]).pipe(
+    map(([currentPage, isLoading, isDisabled, users]) => ({
+      currentPage,
+      isLoading,
+      isDisabled,
+      users,
+    }))
+  );
 
   constructor(private usersService: UserService) {
     this.defaultItems = new Map([
       [usersService.getData()[1], { selected: true, disabled: false }],
       [usersService.getData()[3], { selected: false, disabled: true }],
     ]);
+  }
+
+  onIsLoading(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.isLoading$.next(target.checked);
+  }
+
+  onIsDisabled(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.isDisabled$.next(target.checked);
   }
 
   onSimpleSelectionChange(
@@ -105,5 +146,9 @@ export class AppComponent {
 
   onSortingDropdownToggle(): void {
     this.isSortingDropdownActive = !this.isSortingDropdownActive;
+  }
+
+  onPage(page: number): void {
+    this.currentPage$.next(page);
   }
 }
