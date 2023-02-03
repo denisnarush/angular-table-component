@@ -7,8 +7,7 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { NestedConfig } from './nested.config';
-import { SimpleConfig } from './simple.config';
+import { SimpleConfig, NestedConfig } from './table.config';
 import {
   SelectedItemStateInterface,
   TableActions,

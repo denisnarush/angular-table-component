@@ -292,6 +292,56 @@ export const SelectionDescribe = () => {
     expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeTrue();
   });
 
+  it(`when all items are selected & disabled then Check All should be checked. Case Multiple`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+        selection: TableActions.Multiple,
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', THREE_ITEMS);
+      // @Input() defaultItems =
+      SET_INPUT(
+        SCOPE,
+        'defaultItems',
+        new Map([
+          [THREE_ITEMS[0], { selected: true, disabled: true }],
+          [THREE_ITEMS[1], { selected: true, disabled: true }],
+          [THREE_ITEMS[2], { selected: true, disabled: true }],
+        ])
+      );
+    });
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+  });
+
+  it(`when all items are disabled and all selected (except one) then Check All should be checked. Case Multiple`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+        selection: TableActions.Multiple,
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', THREE_ITEMS);
+      // @Input() defaultItems =
+      SET_INPUT(
+        SCOPE,
+        'defaultItems',
+        new Map([
+          [THREE_ITEMS[0], { selected: true, disabled: true }],
+          [THREE_ITEMS[1], { selected: false, disabled: true }],
+          [THREE_ITEMS[2], { selected: true, disabled: true }],
+        ])
+      );
+    });
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+  });
+
   it(`when all items are selected then Check All should be checked. Case Multiple`, () => {
     INIT(SCOPE, () => {
       // @Input() config =

@@ -291,7 +291,7 @@ export class TableComponent implements OnInit, OnChanges {
           numberOfSelected += 1;
         }
 
-        if (state.disabled) {
+        if (state.disabled && !state.selected) {
           numberOfItems -= 1;
         }
       }
