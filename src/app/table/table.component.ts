@@ -47,6 +47,8 @@ export class TableComponent implements OnInit, OnChanges {
     Map<TableColumnInterface, TableConfigSortingColumnInterface>
   > = new EventEmitter();
 
+  @Output() action: EventEmitter<TableDataInterface> = new EventEmitter();
+
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
 
@@ -117,7 +119,8 @@ export class TableComponent implements OnInit, OnChanges {
     }
   }
 
-  onToggleNesting(item: TableDataInterface): void {
+  onToggleNesting(item: TableDataInterface, event: Event): void {
+    event.stopPropagation();
     this.openedRows.set(item, !this.openedRows.get(item));
     this.openedRows = new Map(this.openedRows);
   }
@@ -190,6 +193,20 @@ export class TableComponent implements OnInit, OnChanges {
     this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
     this.udpateCheckAll();
+  }
+
+  onAction(item: TableDataInterface, event: Event): void {
+    event.stopPropagation();
+    switch ((event.target as Element).tagName) {
+      case "A":
+      case "INPUT":
+      case "BUTTON":
+      case "TEXTAREA":
+        return;
+      default:
+        this.action.emit(item);
+        break;
+    }
   }
 
   reset(): void {

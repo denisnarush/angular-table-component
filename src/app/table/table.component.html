@@ -82,7 +82,7 @@
 </ng-template>
 
 <ng-template #nesting let-item let-isOpened="isOpened">
-  <span class="p-3" data-e2e="nesting-toggle" (click)="onToggleNesting(item)">
+  <span class="p-3" data-e2e="nesting-toggle" (click)="onToggleNesting(item, $event)">
     <ng-conatiner [ngSwitch]="isOpened">
       <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="up"></ng-container>
       <ng-container *ngSwitchDefault [ngTemplateOutlet]="down"></ng-container>
@@ -104,7 +104,7 @@
 </ng-template>
 
 <ng-template #row let-item let-isOpened="isOpened">
-  <tr data-e2e="data-row">
+  <tr data-e2e="data-row" (click)="onAction(item, $event)">
     <td *ngFor="let column of columns">
       <ng-container [ngSwitch]="column.type" *ngIf="!loading; else isloading" >
         <!-- select SINGLE -->
