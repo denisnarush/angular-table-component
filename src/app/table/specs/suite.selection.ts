@@ -1,12 +1,12 @@
 import { By } from '@angular/platform-browser';
 import { TableActions } from '../table.interface';
 
-import { INIT, BEFORE_EACH, SET_INPUT } from './helpers';
+import { INIT, BEFORE_EACH, SET_INPUT, ScopeInterface } from './helpers';
 
 import { ONE_ITEM, THREE_ITEMS, TWO_ITEMS } from './mock.data';
 
 export const SelectionDescribe = () => {
-  let SCOPE: any = {};
+  let SCOPE: ScopeInterface = Object.assign({});
 
   beforeEach(async () => {
     await BEFORE_EACH(SCOPE);
@@ -24,7 +24,7 @@ export const SelectionDescribe = () => {
     });
 
     expect(
-      SCOPE.HTML_ELEMENTS['ROOT'].querySelectorAll('thead tr th').length
+      SCOPE.HTML_ELEMENTS['ROOT']?.querySelectorAll('thead tr th').length
     ).toBe(1);
     expect(SCOPE.DEBUG_ELEMENTS['CHECK_ALL']).toBeNull();
     expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']).toBeUndefined();
@@ -42,10 +42,10 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
     expect(
-      SCOPE.HTML_ELEMENTS['ROOT'].querySelectorAll('thead tr th').length
+      SCOPE.HTML_ELEMENTS['ROOT']?.querySelectorAll('thead tr th').length
     ).toBe(2);
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelectorAll('td')
         .length
     ).toBe(2);
     expect(SCOPE.DEBUG_ELEMENTS['CHECK_ALL']).toBeDefined();
@@ -73,34 +73,34 @@ export const SelectionDescribe = () => {
       );
     });
 
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.length).toBe(3);
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelector(
         'input[type=checkbox]'
       )
     ).toBeDefined();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][1].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].nativeElement.querySelector(
         'input[type=checkbox]'
       )
     ).toBeDefined();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][2].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[2].nativeElement.querySelector(
         'input[type=checkbox]'
       )
     ).toBeDefined();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelector(
         'input[type=checkbox]'
       ).checked
     ).toBeTrue();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][1].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].nativeElement.querySelector(
         'input[type=checkbox]'
       ).checked
     ).toBeFalse();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][2].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[2].nativeElement.querySelector(
         'input[type=checkbox]'
       ).checked
     ).toBeTrue();
@@ -131,10 +131,10 @@ export const SelectionDescribe = () => {
     expect(SCOPE.COMPONENT.selectedItems.has(THREE_ITEMS[0])).toBeTrue();
     expect(SCOPE.COMPONENT.selectedItems.has(THREE_ITEMS[2])).toBeTrue();
     expect(
-      SCOPE.COMPONENT.selectedItems.get(THREE_ITEMS[0]).selected
+      SCOPE.COMPONENT.selectedItems.get(THREE_ITEMS[0])?.selected
     ).toBeTrue();
     expect(
-      SCOPE.COMPONENT.selectedItems.get(THREE_ITEMS[2]).selected
+      SCOPE.COMPONENT.selectedItems.get(THREE_ITEMS[2])?.selected
     ).toBeTrue();
   });
 
@@ -150,21 +150,21 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
     expect(inputHtml.checked).toBeFalse();
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
-    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM).selected).toBeTrue();
-    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM).disabled).toBeFalse();
+    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM)?.selected).toBeTrue();
+    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM)?.disabled).toBeFalse();
   });
 
   it(`should't set lastValue on selection. case Multiple`, () => {
@@ -179,18 +179,18 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
 
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
   });
 
   it(`should't set/change lastValue on selection. case Multiple`, () => {
@@ -206,30 +206,30 @@ export const SelectionDescribe = () => {
     });
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
 
-    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][1];
-    const nextInputDebug = nextRowDebug.query(By.css('input'));
-    const nextInputHtml = nextInputDebug.nativeElement;
+    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1];
+    const nextInputDebug = nextRowDebug?.query(By.css('input'));
+    const nextInputHtml = nextInputDebug?.nativeElement;
 
     nextInputHtml.checked = true;
-    nextInputDebug.triggerEventHandler('change', { target: nextInputHtml });
+    nextInputDebug?.triggerEventHandler('change', { target: nextInputHtml });
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(2);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
   });
 
   it(`selected items size should be N-selected items on selection. case Multiple`, () => {
@@ -246,23 +246,23 @@ export const SelectionDescribe = () => {
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
 
-    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][1];
-    const nextInputDebug = nextRowDebug.query(By.css('input'));
-    const nextInputHtml = nextInputDebug.nativeElement;
+    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1];
+    const nextInputDebug = nextRowDebug?.query(By.css('input'));
+    const nextInputHtml = nextInputDebug?.nativeElement;
 
     nextInputHtml.checked = true;
-    nextInputDebug.triggerEventHandler('change', { target: nextInputHtml });
+    nextInputDebug?.triggerEventHandler('change', { target: nextInputHtml });
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(2);
@@ -288,8 +288,8 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeTrue();
   });
 
   it(`when all items are selected & disabled then Check All should be checked. Case Multiple`, () => {
@@ -313,8 +313,8 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
   });
 
   it(`when all items are disabled and all selected (except one) then Check All should be checked. Case Multiple`, () => {
@@ -338,8 +338,8 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
   });
 
   it(`when all items are selected then Check All should be checked. Case Multiple`, () => {
@@ -363,8 +363,8 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
   });
 
   it(`when none items is checked then Check All should be unchecked. Case Multiple`, () => {
@@ -388,8 +388,8 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
   });
 
   it(`when uncheck one item from all checked items then Check All should be partial. Case Multiple`, () => {
@@ -413,19 +413,21 @@ export const SelectionDescribe = () => {
         ])
       );
     });
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
-    const selectDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS'][1].query(
+    const selectDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].query(
       By.css('[type="checkbox"]')
     );
-    const selectElement = selectDebugElement.nativeElement;
+    const selectElement = selectDebugElement?.nativeElement;
     selectElement.checked = false;
-    selectDebugElement.triggerEventHandler('change', { target: selectElement });
+    selectDebugElement?.triggerEventHandler('change', {
+      target: selectElement,
+    });
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeTrue();
   });
 
   it(`when some items checked and click on Check All then Check All and all items should be checked. Case Multiple`, () => {
@@ -451,14 +453,15 @@ export const SelectionDescribe = () => {
     });
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
-    const items = SCOPE.COMPONENT.data.length;
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
+
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -491,18 +494,18 @@ export const SelectionDescribe = () => {
       );
     });
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
-    const items = SCOPE.COMPONENT.data.length;
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -525,18 +528,18 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', THREE_ITEMS);
     });
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
-    const items = SCOPE.COMPONENT.data.length;
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -569,18 +572,18 @@ export const SelectionDescribe = () => {
       );
     });
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeTrue();
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
-    const items = SCOPE.COMPONENT.data.length;
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -590,8 +593,8 @@ export const SelectionDescribe = () => {
 
     expect(selected).toBe(items);
 
-    checkAllElement.checked = false;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = false;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
 
@@ -633,21 +636,21 @@ export const SelectionDescribe = () => {
     });
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    const items = SCOPE.COMPONENT.data.length;
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -657,15 +660,15 @@ export const SelectionDescribe = () => {
 
     expect(selected).toBe(items);
 
-    checkAllElement.checked = false;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = false;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     selected = 0;
     let unselected = 0;
@@ -692,21 +695,21 @@ export const SelectionDescribe = () => {
     });
 
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    const items = SCOPE.COMPONENT.data.length;
+    const items = SCOPE.COMPONENT.data?.length as number;
     let selected = 0;
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
-    checkAllElement.checked = true;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeTrue();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeTrue();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
       if (state.selected) {
@@ -716,15 +719,15 @@ export const SelectionDescribe = () => {
 
     expect(selected).toBe(items);
 
-    checkAllElement.checked = false;
-    SCOPE.DEBUG_ELEMENTS['CHECK_ALL'].triggerEventHandler('change', {
+    checkAllElement['checked'] = false;
+    SCOPE.DEBUG_ELEMENTS['CHECK_ALL']?.triggerEventHandler('change', {
       target: checkAllElement,
     });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].checked).toBeFalse();
-    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL'].indeterminate).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.checked).toBeFalse();
+    expect(SCOPE.HTML_ELEMENTS['CHECK_ALL']?.indeterminate).toBeFalse();
 
     selected = 0;
 
@@ -761,20 +764,20 @@ export const SelectionDescribe = () => {
       );
     });
 
-    const checkAllDegubElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
+    const checkAllDebugElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    const disabledDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS'][0].query(
+    const disabledDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].query(
       By.css('[type="checkbox"]:disabled')
     );
-    const disabledElement = disabledDebugElement.nativeElement;
+    const disabledElement = disabledDebugElement?.nativeElement;
 
     expect(disabledDebugElement).not.toBeNull();
     expect(disabledElement).toBeDefined();
     expect(disabledElement.checked).toBeFalse();
     expect(disabledElement.disabled).toBeTrue();
 
-    checkAllElement.checked = true;
-    checkAllDegubElement.triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    checkAllDebugElement?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
@@ -805,20 +808,20 @@ export const SelectionDescribe = () => {
       );
     });
 
-    const checkAllDegubElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
+    const checkAllDebugElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    const disabledDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS'][0].query(
+    const disabledDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].query(
       By.css('[type="checkbox"]:disabled')
     );
-    const disabledElement = disabledDebugElement.nativeElement;
+    const disabledElement = disabledDebugElement?.nativeElement;
 
     expect(disabledDebugElement).not.toBeNull();
     expect(disabledElement).toBeDefined();
     expect(disabledElement.checked).toBeFalse();
     expect(disabledElement.disabled).toBeTrue();
 
-    checkAllElement.checked = true;
-    checkAllDegubElement.triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    checkAllDebugElement?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
@@ -850,12 +853,12 @@ export const SelectionDescribe = () => {
       );
     });
 
-    const checkAllDegubElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
+    const checkAllDebugElement = SCOPE.DEBUG_ELEMENTS['CHECK_ALL'];
     const checkAllElement = SCOPE.HTML_ELEMENTS['CHECK_ALL'];
-    const selecDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS'][1].query(
+    const selectDebugElement = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].query(
       By.css('[type="checkbox"]')
     );
-    const seleletElement = selecDebugElement.nativeElement;
+    const selectElement = selectDebugElement?.nativeElement;
     let selected = 0;
 
     let unselected = 0;
@@ -866,15 +869,15 @@ export const SelectionDescribe = () => {
       }
     });
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))
+      SCOPE.DEBUG_ELEMENTS['ROOT']?.queryAll(By.css('tbody input:checked'))
         .length
     ).toBe(0);
     expect(unselected).toBe(3);
 
     // click on check all
     selected = 0;
-    checkAllElement.checked = true;
-    checkAllDegubElement.triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    checkAllDebugElement?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
@@ -886,15 +889,17 @@ export const SelectionDescribe = () => {
     });
 
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))
+      SCOPE.DEBUG_ELEMENTS['ROOT']?.queryAll(By.css('tbody input:checked'))
         .length
     ).toBe(2);
     expect(selected).toBe(2);
 
     // uncheck one
     selected = 0;
-    seleletElement.checked = false;
-    selecDebugElement.triggerEventHandler('change', { target: seleletElement });
+    selectElement.checked = false;
+    selectDebugElement?.triggerEventHandler('change', {
+      target: selectElement,
+    });
     SCOPE.FIXTURE.detectChanges();
 
     Array.from(SCOPE.COMPONENT.selectedItems.values()).forEach((state: any) => {
@@ -904,15 +909,15 @@ export const SelectionDescribe = () => {
     });
 
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))
+      SCOPE.DEBUG_ELEMENTS['ROOT']?.queryAll(By.css('tbody input:checked'))
         .length
     ).toBe(1);
     expect(selected).toBe(1);
 
     // click on check all
     selected = 0;
-    checkAllElement.checked = true;
-    checkAllDegubElement.triggerEventHandler('change', {
+    checkAllElement['checked'] = true;
+    checkAllDebugElement?.triggerEventHandler('change', {
       target: checkAllElement,
     });
     SCOPE.FIXTURE.detectChanges();
@@ -923,7 +928,7 @@ export const SelectionDescribe = () => {
       }
     });
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROOT'].queryAll(By.css('tbody input:checked'))
+      SCOPE.DEBUG_ELEMENTS['ROOT']?.queryAll(By.css('tbody input:checked'))
         .length
     ).toBe(2);
     expect(selected).toBe(2);
@@ -947,24 +952,24 @@ export const SelectionDescribe = () => {
       );
     });
 
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.length).toBe(3);
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelector(
         'input[type=radio]'
       )
     ).toBeDefined();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelector(
         'input[type=radio]'
       ).checked
     ).toBeFalse();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][1].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].nativeElement.querySelector(
         'input[type=radio]'
       )
     ).toBeDefined();
     expect(
-      SCOPE.DEBUG_ELEMENTS['ROWS'][1].nativeElement.querySelector(
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[1].nativeElement.querySelector(
         'input[type=radio]'
       ).checked
     ).toBeTrue();
@@ -982,21 +987,21 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
     expect(inputHtml.checked).toBeFalse();
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
-    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM).selected).toBeTrue();
-    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM).disabled).toBeFalse();
+    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM)?.selected).toBeTrue();
+    expect(SCOPE.COMPONENT.selectedItems.get(ONE_ITEM)?.disabled).toBeFalse();
   });
 
   it(`should set lastValue on selection. case Single`, () => {
@@ -1011,19 +1016,19 @@ export const SelectionDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
 
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeDefined();
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBe(ONE_ITEM);
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeDefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBe(ONE_ITEM);
   });
 
   it(`should change lastValue on selection. case Single`, () => {
@@ -1039,32 +1044,32 @@ export const SelectionDescribe = () => {
     });
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeUndefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeUndefined();
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeDefined();
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBe(TWO_ITEMS[0]);
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeDefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBe(TWO_ITEMS[0]);
 
-    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][1];
-    const nextInputDebug = nextRowDebug.query(By.css('input'));
-    const nextInputHtml = nextInputDebug.nativeElement;
+    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1];
+    const nextInputDebug = nextRowDebug?.query(By.css('input'));
+    const nextInputHtml = nextInputDebug?.nativeElement;
 
     nextInputHtml.checked = true;
-    nextInputDebug.triggerEventHandler('change', { target: nextInputHtml });
+    nextInputDebug?.triggerEventHandler('change', { target: nextInputHtml });
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBeDefined();
-    expect(SCOPE.COMPONENT.lastSelectedRow).toBe(TWO_ITEMS[1]);
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBeDefined();
+    expect(SCOPE.COMPONENT['lastSelectedRow']).toBe(TWO_ITEMS[1]);
   });
 
   it(`selected items size should be 1 on selection. case Single`, () => {
@@ -1081,23 +1086,23 @@ export const SelectionDescribe = () => {
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
 
-    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][0];
-    const inputDebug = rowDebug.query(By.css('input'));
-    const inputHtml = inputDebug.nativeElement;
+    const rowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0];
+    const inputDebug = rowDebug?.query(By.css('input'));
+    const inputHtml = inputDebug?.nativeElement;
 
     inputHtml.checked = true;
-    inputDebug.triggerEventHandler('change', { target: inputHtml });
+    inputDebug?.triggerEventHandler('change', { target: inputHtml });
 
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
 
-    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS'][1];
-    const nextInputDebug = nextRowDebug.query(By.css('input'));
-    const nextInputHtml = nextInputDebug.nativeElement;
+    const nextRowDebug = SCOPE.DEBUG_ELEMENTS['ROWS']?.[1];
+    const nextInputDebug = nextRowDebug?.query(By.css('input'));
+    const nextInputHtml = nextInputDebug?.nativeElement;
 
     nextInputHtml.checked = true;
-    nextInputDebug.triggerEventHandler('change', { target: nextInputHtml });
+    nextInputDebug?.triggerEventHandler('change', { target: nextInputHtml });
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);

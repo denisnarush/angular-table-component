@@ -9,7 +9,6 @@ import {
 } from './helpers';
 
 import { ONE_ITEM, TWO_ITEMS } from './mock.data';
-import { DebugElement } from '@angular/core';
 
 export const NestingDescribe = () => {
   let SCOPE: ScopeInterface = Object.assign({});
@@ -29,7 +28,7 @@ export const NestingDescribe = () => {
       SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     });
     expect(
-      SCOPE.HTML_ELEMENTS['ROOT'].querySelectorAll('thead tr th').length
+      SCOPE.HTML_ELEMENTS['ROOT']?.querySelectorAll('thead tr th').length
     ).toBe(1);
   });
 

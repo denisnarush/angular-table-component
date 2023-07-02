@@ -12,11 +12,15 @@ export interface ScopeInterface {
   COMPONENT: TableComponent;
   DEBUG_ELEMENTS: {
     [K: string]: DebugElement | DebugElement[] | undefined;
+    ROOT?: DebugElement;
+    HEADER?: DebugElement;
     ROWS?: DebugElement[];
     NESTING_VIEWS?: DebugElement[];
+    CHECK_ALL?: DebugElement;
   };
   HTML_ELEMENTS: {
-    [K: string]: HTMLElement;
+    [K: string]: HTMLElement | undefined;
+    CHECK_ALL: HTMLInputElement;
   };
   FIXTURES: {
     email?: ComponentFixture<MockEmailColumnTemplateComponent>;
@@ -87,10 +91,10 @@ export const BEFORE_EACH = async (SCOPE: ScopeInterface) => {
     teardown: { destroyAfterEach: false },
   }).compileComponents();
 
-  SCOPE.DEBUG_ELEMENTS = {};
-  SCOPE.HTML_ELEMENTS = {};
-  SCOPE.FIXTURES = {};
-  SCOPE.COMPONENTS = {};
+  SCOPE.DEBUG_ELEMENTS = Object.assign({});
+  SCOPE.HTML_ELEMENTS = Object.assign({});
+  SCOPE.FIXTURES = Object.assign({});
+  SCOPE.COMPONENTS = Object.assign({});
 
   RECREATE(SCOPE);
   SCOPE.FIXTURE.detectChanges();

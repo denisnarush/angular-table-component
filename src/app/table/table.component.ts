@@ -196,11 +196,11 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (this.config.selection === TableActions.Single) {
-      if (this.lastSelectedRow != null) {
-        this.selectedItems.delete(this.lastSelectedRow);
+      if (this['lastSelectedRow'] != null) {
+        this.selectedItems.delete(this['lastSelectedRow']);
       }
       this.selectedItems.set(item, { selected: true, disabled: false });
-      this.lastSelectedRow = item;
+      this['lastSelectedRow'] = item;
     }
 
     this.selectedItems = new Map(this.selectedItems);
@@ -232,8 +232,8 @@ export class TableComponent implements OnInit, OnChanges {
   private initSelectedItems(): void {
     this.defaultItems.forEach((state, item) => {
       if (this.config.selection === TableActions.Single) {
-        if (state.selected && this.lastSelectedRow == null) {
-          this.lastSelectedRow = item;
+        if (state.selected && this['lastSelectedRow'] == null) {
+          this['lastSelectedRow'] = item;
         }
       }
 

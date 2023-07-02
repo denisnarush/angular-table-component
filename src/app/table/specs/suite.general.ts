@@ -112,7 +112,7 @@ export const GeneralDescribe = () => {
     expect(SCOPE.HTML_ELEMENTS['EMPTY_DATA']).toBeDefined();
   });
 
-  it(`display row of statick data`, () => {
+  it(`display row of static data`, () => {
     INIT(SCOPE, () => {
       // @Input() config =
       SET_INPUT(SCOPE, 'config', {
