@@ -103,20 +103,7 @@ export const Users = [
     latitude: 47.689932,
     longitude: 61.759739,
     tags: ['aute', 'ea', 'excepteur', 'velit', 'fugiat', 'eiusmod', 'esse'],
-    friends: [
-      {
-        id: 0,
-        name: 'Lilia Farley',
-      },
-      {
-        id: 1,
-        name: 'Bernadette Odonnell',
-      },
-      {
-        id: 2,
-        name: 'Walls Brewer',
-      },
-    ],
+    friends: [],
     greeting: 'Hello, Eugenia Rasmussen! You have 10 unread messages.',
     favoriteFruit: 'strawberry',
   },

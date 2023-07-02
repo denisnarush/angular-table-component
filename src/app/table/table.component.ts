@@ -35,10 +35,13 @@ import {
 export class TableComponent implements OnInit, OnChanges {
   @Input() config!: TableConfigInterface;
   @Input() data: TableDataInterface[] | null = null;
-  @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
+  @Input() defaultItems: Map<TableDataInterface, SelectedItemStateInterface> =
+    new Map();
   @Input() templates: ColumnsTemplatesInterface = {};
   @Input() disabled = false;
   @Input() loading = false;
+  // only used at html ng-template where is nested table provided and applies `is-nested` class to table tag
+  @Input() isNested = false;
 
   @Output() selectionChange: EventEmitter<
     Map<TableDataInterface, SelectedItemStateInterface>
@@ -52,8 +55,10 @@ export class TableComponent implements OnInit, OnChanges {
   uuid: string = new Date().getTime() + '';
   columns: Set<TableColumnInterface> = new Set();
 
-  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> = new Map();
-  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> = new Map();
+  sortedColumns: Map<TableColumnInterface, TableConfigSortingColumnInterface> =
+    new Map();
+  selectedItems: Map<TableDataInterface, SelectedItemStateInterface> =
+    new Map();
   openedRows: Map<TableDataInterface, boolean> = new Map();
 
   // Enums
@@ -81,7 +86,7 @@ export class TableComponent implements OnInit, OnChanges {
       this.initNesting();
     }
 
-    this.config.columns.forEach(column => {
+    this.config.columns.forEach((column) => {
       this.columns.add({ ...column, type: this.getColumnType(column) });
     });
 
@@ -97,8 +102,9 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (changes['data']?.currentValue) {
-      const data: TableDataInterface[] = changes['data'].currentValue;
-      this.data = data.map((item) => {
+      const newData: TableDataInterface[] = changes['data'].currentValue;
+
+      this.data = newData.map((item) => {
         for (const key of this.selectedItems.keys()) {
           if (isEqual(item, key)) {
             return (item = key);
@@ -109,7 +115,7 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (changes['data']) {
-      this.udpateCheckAll();
+      this.updateCheckAll();
     }
 
     if (changes['config']?.previousValue) {
@@ -121,7 +127,14 @@ export class TableComponent implements OnInit, OnChanges {
 
   onToggleNesting(item: TableDataInterface, event: Event): void {
     event.stopPropagation();
-    this.openedRows.set(item, !this.openedRows.get(item));
+    const state = !this.openedRows.get(item);
+
+    if (this.config.nestingIsSingle) {
+      this.openedRows = new Map([[item, state]]);
+    } else {
+      this.openedRows.set(item, state);
+    }
+
     this.openedRows = new Map(this.openedRows);
   }
 
@@ -158,7 +171,7 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   onSelectAll(event: Event): void {
-    this.data?.forEach(value => {
+    this.data?.forEach((value) => {
       const state = this.selectedItems.get(value);
       this.selectedItems.set(value, {
         selected:
@@ -171,7 +184,7 @@ export class TableComponent implements OnInit, OnChanges {
 
     this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
-    this.udpateCheckAll();
+    this.updateCheckAll();
   }
 
   onSelectItem(item: TableDataInterface, event: Event): void {
@@ -192,16 +205,18 @@ export class TableComponent implements OnInit, OnChanges {
 
     this.selectedItems = new Map(this.selectedItems);
     this.selectionChange.emit(this.selectedItems);
-    this.udpateCheckAll();
+    this.updateCheckAll();
   }
 
   onAction(item: TableDataInterface, event: Event): void {
     event.stopPropagation();
+
     switch ((event.target as Element).tagName) {
-      case "A":
-      case "INPUT":
-      case "BUTTON":
-      case "TEXTAREA":
+      case 'A':
+      case 'INPUT':
+      case 'BUTTON':
+      case 'TEXTAREA':
+      case 'SELECT':
         return;
       default:
         this.action.emit(item);
@@ -251,7 +266,7 @@ export class TableComponent implements OnInit, OnChanges {
     if (this.config.sorting.type === TableActions.Single) {
       const columnWithSorting = this.config.sorting.columns[0];
       const column = Array.from(this.columns.values()).find(
-        item => columnWithSorting.alias === item.alias,
+        (item) => columnWithSorting.alias === item.alias
       );
 
       if (column) {
@@ -265,9 +280,9 @@ export class TableComponent implements OnInit, OnChanges {
     }
 
     if (this.config.sorting.type === TableActions.Multiple) {
-      this.config.sorting.columns.forEach(columnWithSorting => {
+      this.config.sorting.columns.forEach((columnWithSorting) => {
         const column = Array.from(this.columns.values()).find(
-          item => columnWithSorting.alias === item.alias,
+          (item) => columnWithSorting.alias === item.alias
         );
 
         if (column) {
@@ -283,7 +298,7 @@ export class TableComponent implements OnInit, OnChanges {
   private getColumnType(column: TableConfigColumInterface): TableColumnType {
     if (
       this.config.sorting !== null &&
-      this.config.sorting?.columns.find(index => index.alias === column.alias)
+      this.config.sorting?.columns.find((index) => index.alias === column.alias)
     ) {
       return TableConfigColumAliases.Sorting;
     }
@@ -291,7 +306,7 @@ export class TableComponent implements OnInit, OnChanges {
     return TableConfigColumAliases.Regular;
   }
 
-  private udpateCheckAll(): void {
+  private updateCheckAll(): void {
     if (this.data == null) {
       this.checkAllStatus = false;
       return;
@@ -300,7 +315,7 @@ export class TableComponent implements OnInit, OnChanges {
     let numberOfItems = this.data.length;
     let numberOfSelected = 0;
 
-    this.data.forEach(item => {
+    this.data.forEach((item) => {
       const state = this.selectedItems.get(item);
 
       if (state) {

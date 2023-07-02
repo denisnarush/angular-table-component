@@ -13,6 +13,7 @@ export interface ScopeInterface {
   DEBUG_ELEMENTS: {
     [K: string]: DebugElement | DebugElement[] | undefined;
     ROWS?: DebugElement[];
+    NESTING_VIEWS?: DebugElement[];
   };
   HTML_ELEMENTS: {
     [K: string]: HTMLElement;
@@ -37,7 +38,7 @@ export const CREATE_EMAIL_TEMPLATE = (SCOPE: ScopeInterface) => {
   SCOPE.COMPONENTS.email = SCOPE.FIXTURES.email.componentInstance;
 };
 
-export const REINIT_ELEMENTS = (SCOPE: ScopeInterface) => {
+export const RE_INIT_ELEMENTS = (SCOPE: ScopeInterface) => {
   SCOPE.DEBUG_ELEMENTS['ROOT'] = SCOPE.FIXTURE.debugElement.query(
     By.css('.table-container')
   );
@@ -83,6 +84,7 @@ export const BEFORE_EACH = async (SCOPE: ScopeInterface) => {
       CheckAllStatusDirective,
       MockEmailColumnTemplateComponent,
     ],
+    teardown: { destroyAfterEach: false },
   }).compileComponents();
 
   SCOPE.DEBUG_ELEMENTS = {};
@@ -106,5 +108,5 @@ export const INIT = (SCOPE: ScopeInterface, beforeOnInit = () => {}) => {
   RECREATE(SCOPE);
   beforeOnInit();
   SCOPE.FIXTURE.detectChanges();
-  REINIT_ELEMENTS(SCOPE);
+  RE_INIT_ELEMENTS(SCOPE);
 };

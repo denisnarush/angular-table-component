@@ -158,6 +158,6 @@
   
 </ng-template>
 
-<ng-template #nested>
-  <marketplace-table [config]="NestedConfig"></marketplace-table>
+<ng-template #nested let-data>
+  <marketplace-table [config]="NestedConfig" [data]="data.friends"></marketplace-table>
 </ng-template>

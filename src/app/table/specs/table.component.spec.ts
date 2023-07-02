@@ -15,6 +15,7 @@ describe('TableComponent/general', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TableComponent, GetValueByPathPipe, GetMapValueByKeyPipe],
+      teardown: { destroyAfterEach: false },
     }).compileComponents();
 
     fixture = TestBed.createComponent(TableComponent);

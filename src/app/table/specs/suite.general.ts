@@ -4,14 +4,19 @@ import {
   INIT,
   BEFORE_EACH,
   SET_INPUT,
-  REINIT_ELEMENTS,
+  RE_INIT_ELEMENTS,
   CREATE_EMAIL_TEMPLATE,
+  ScopeInterface,
 } from './helpers';
 
 import { ONE_ITEM, THREE_ITEMS } from './mock.data';
+import {
+  SelectedItemStateInterface,
+  TableDataInterface,
+} from '../table.interface';
 
 export const GeneralDescribe = () => {
-  let SCOPE: any = {};
+  let SCOPE: ScopeInterface = Object.assign({});
 
   beforeEach(async () => {
     await BEFORE_EACH(SCOPE);
@@ -131,8 +136,8 @@ export const GeneralDescribe = () => {
     expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeDefined();
 
     expect(SCOPE.DEBUG_ELEMENTS['ROWS']).not.toBeNull();
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(1);
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.length).toBe(1);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement).toBeDefined();
   });
 
   it(`display row of when async data`, () => {
@@ -149,7 +154,7 @@ export const GeneralDescribe = () => {
     SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
     SCOPE.FIXTURE.detectChanges();
 
-    REINIT_ELEMENTS(SCOPE);
+    RE_INIT_ELEMENTS(SCOPE);
 
     expect(SCOPE.DEBUG_ELEMENTS['ROOT']).toBeDefined();
     expect(SCOPE.HTML_ELEMENTS['ROOT']).toBeDefined();
@@ -160,8 +165,8 @@ export const GeneralDescribe = () => {
     expect(SCOPE.DEBUG_ELEMENTS['EMPTY_DATA']).toBeNull();
 
     expect(SCOPE.DEBUG_ELEMENTS['ROWS']).not.toBeNull();
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(1);
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement).toBeDefined();
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.length).toBe(1);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement).toBeDefined();
   });
 
   it(`data item value can be described as a path`, () => {
@@ -186,7 +191,7 @@ export const GeneralDescribe = () => {
     });
 
     const value =
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')[1]
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelectorAll('td')[1]
         .textContent;
 
     expect(value).toBe('John');
@@ -214,7 +219,7 @@ export const GeneralDescribe = () => {
     });
 
     const value =
-      SCOPE.DEBUG_ELEMENTS['ROWS'][0].nativeElement.querySelectorAll('td')[1]
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].nativeElement.querySelectorAll('td')[1]
         .textContent;
 
     expect(value).toBe('—');
@@ -231,7 +236,7 @@ export const GeneralDescribe = () => {
       SET_INPUT(SCOPE, 'data', THREE_ITEMS);
     });
 
-    expect(SCOPE.DEBUG_ELEMENTS['ROWS'].length).toBe(3);
+    expect(SCOPE.DEBUG_ELEMENTS['ROWS']?.length).toBe(3);
   });
 
   it(`cell can be defined with template`, () => {
@@ -246,12 +251,12 @@ export const GeneralDescribe = () => {
     });
 
     CREATE_EMAIL_TEMPLATE(SCOPE);
-    SCOPE.FIXTURES.email.detectChanges();
+    SCOPE.FIXTURES?.email?.detectChanges();
 
-    SET_INPUT(SCOPE, 'templates', { email: SCOPE.COMPONENTS.email.template });
+    SET_INPUT(SCOPE, 'templates', { email: SCOPE.COMPONENTS?.email?.template });
     SCOPE.FIXTURE.detectChanges();
 
-    const emailCellElement = SCOPE.DEBUG_ELEMENTS['ROWS'][0].query(
+    const emailCellElement = SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].query(
       By.css('td')
     ).nativeElement;
 
@@ -282,5 +287,82 @@ export const GeneralDescribe = () => {
     SCOPE.FIXTURE.detectChanges();
 
     expect(SCOPE.COMPONENT.columns.size).toBe(2);
+  });
+
+  it(`table data can be reset to initial state`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', []);
+    });
+
+    expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
+    // @Input() defaultItems =
+    SET_INPUT(
+      SCOPE,
+      'defaultItems',
+      new Map<TableDataInterface, SelectedItemStateInterface>([
+        [[], { selected: true, disabled: false }],
+      ])
+    );
+    SCOPE.FIXTURE.detectChanges();
+    expect(SCOPE.COMPONENT.selectedItems.size).toBe(1);
+    expect(SCOPE.COMPONENT.openedRows.size).toBe(0);
+    SCOPE.COMPONENT.onToggleNesting({}, new Event(''));
+    expect(SCOPE.COMPONENT.openedRows.size).toBe(1);
+    SCOPE.COMPONENT.reset();
+    expect(SCOPE.COMPONENT.selectedItems.size).toBe(0);
+    expect(SCOPE.COMPONENT.openedRows.size).toBe(0);
+  });
+
+  it(`should trigger action on row click`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    });
+
+    spyOn(SCOPE.COMPONENT.action, 'emit');
+
+    SCOPE.FIXTURE.detectChanges();
+    SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].triggerEventHandler('click', {
+      target: {
+        tagName: 'TR',
+      },
+      stopPropagation: () => {},
+    });
+    expect(SCOPE.COMPONENT.action.emit).toHaveBeenCalled();
+    expect(SCOPE.COMPONENT.action.emit).toHaveBeenCalledWith(ONE_ITEM);
+  });
+
+  it(`should't trigger action on clicking elements A, INPUT, BUTTON, TEXTAREA, SELECT`, () => {
+    INIT(SCOPE, () => {
+      // @Input() config =
+      SET_INPUT(SCOPE, 'config', {
+        columns: [{ alias: 'id', label: 'ID' }],
+        uniqIdKey: 'id',
+      });
+      // @Input() data =
+      SET_INPUT(SCOPE, 'data', [ONE_ITEM]);
+    });
+
+    spyOn(SCOPE.COMPONENT.action, 'emit');
+
+    ['A', 'INPUT', 'BUTTON', 'TEXTAREA', 'SELECT'].forEach((tagName) => {
+      SCOPE.DEBUG_ELEMENTS['ROWS']?.[0].triggerEventHandler('click', {
+        target: { tagName },
+        stopPropagation: () => {},
+      });
+    });
+
+    expect(SCOPE.COMPONENT.action.emit).toHaveBeenCalledTimes(0);
   });
 };

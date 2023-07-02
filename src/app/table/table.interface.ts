@@ -32,6 +32,8 @@ export interface TableConfigInterface {
   uniqIdKey: TableConfigUniqIdKeyType;
   selection?: TableActionType;
   nesting?: boolean;
+  // allows open only one nested table at a time
+  nestingIsSingle?: boolean;
   sorting?: TableConfigSortingInterface;
 }
 
